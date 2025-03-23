@@ -1,0 +1,53 @@
+{
+  "name": "file",
+  "namespace": "files",
+  "label_field": "name",
+  "disable_timestamp": false,
+  "fields": [
+    {
+      "type": "relation",
+      "name": "category_image",
+      "label": "Category_image",
+      "optional": true,
+      "relation": {
+        "schema": "category",
+        "field": "image",
+        "type": "o2m",
+        "owner": true,
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "product_featured_image",
+      "label": "Product_featured_image",
+      "optional": true,
+      "relation": {
+        "schema": "product",
+        "field": "featured_image",
+        "type": "o2m",
+        "owner": true,
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "product_images",
+      "label": "Product_images",
+      "optional": true,
+      "relation": {
+        "schema": "product",
+        "field": "images",
+        "type": "m2m",
+        "owner": true,
+        "fk_columns": null,
+        "optional": true
+      }
+    }
+  ],
+  "is_system_schema": true
+}

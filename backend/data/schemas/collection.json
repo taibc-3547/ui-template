@@ -1,0 +1,31 @@
+{
+  "name": "collection",
+  "namespace": "collections",
+  "label_field": "name",
+  "disable_timestamp": false,
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "label": "Name",
+      "unique": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "products",
+      "label": "Products",
+      "optional": true,
+      "relation": {
+        "schema": "product",
+        "field": "collections",
+        "type": "m2m",
+        "owner": true,
+        "fk_columns": null,
+        "optional": true
+      }
+    }
+  ]
+}

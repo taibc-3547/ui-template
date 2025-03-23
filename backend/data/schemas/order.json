@@ -1,0 +1,171 @@
+{
+  "name": "order",
+  "namespace": "orders",
+  "label_field": "hash",
+  "disable_timestamp": false,
+  "fields": [
+    {
+      "type": "string",
+      "name": "hash",
+      "label": "Hash",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "name",
+      "label": "Name",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "email",
+      "label": "Email",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "country",
+      "label": "Country",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "city",
+      "label": "City",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "address",
+      "label": "Address",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "phone",
+      "label": "Phone",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "delivery_method",
+      "label": "Delivery Method",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "currency",
+      "label": "Currency",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "float64",
+      "name": "subtotal",
+      "label": "Subtotal",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "float64",
+      "name": "total",
+      "label": "Total",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "float64",
+      "name": "tax",
+      "label": "Tax",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "float64",
+      "name": "delivery_fee",
+      "label": "delivery Fee",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "cart",
+      "label": "Cart",
+      "sortable": true,
+      "renderer": {},
+      "relation": {
+        "schema": "cart",
+        "field": "order",
+        "type": "o2o",
+        "fk_columns": null,
+        "optional": false
+      },
+      "db": {}
+    },
+    {
+      "type": "enum",
+      "name": "status",
+      "label": "Status",
+      "sortable": true,
+      "renderer": {},
+      "enums": [
+        {
+          "value": "payment_pending",
+          "label": "Payment: Pending"
+        },
+        {
+          "value": "payment_success",
+          "label": "Payment: Success"
+        },
+        {
+          "value": "payment_failed",
+          "label": "Payment: Failed"
+        },
+        {
+          "value": "reviewing",
+          "label": "Reviewing"
+        },
+        {
+          "value": "delivery_pending",
+          "label": "Delivery: Pending"
+        },
+        {
+          "value": "delivery_inprogess",
+          "label": "Delivery: Inprogress"
+        },
+        {
+          "value": "delivery_delivered",
+          "label": "Delivery: Delivered"
+        },
+        {
+          "value": "completed",
+          "label": "Completed"
+        }
+      ],
+      "db": {}
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+data/*
+!data/plugins/
+!data/schemas/
+!data/backup/
+!data/migrations/
+.env

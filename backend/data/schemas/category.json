@@ -1,0 +1,69 @@
+{
+  "name": "category",
+  "namespace": "categories",
+  "label_field": "name",
+  "disable_timestamp": false,
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "label": "Name",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "slug",
+      "label": "Slug",
+      "unique": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "description",
+      "label": "Description",
+      "optional": true,
+      "renderer": {
+        "class": "textarea"
+      },
+      "db": {}
+    },
+    {
+      "type": "file",
+      "name": "image",
+      "label": "Image",
+      "optional": true,
+      "renderer": {
+        "settings": {
+          "type": "image"
+        }
+      },
+      "relation": {
+        "schema": "file",
+        "field": "category_image",
+        "type": "o2m",
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "products",
+      "label": "Products",
+      "optional": true,
+      "relation": {
+        "schema": "product",
+        "field": "categories",
+        "type": "m2m",
+        "owner": true,
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    }
+  ]
+}

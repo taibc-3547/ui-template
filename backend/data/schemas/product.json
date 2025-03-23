@@ -1,0 +1,141 @@
+{
+  "name": "product",
+  "namespace": "products",
+  "label_field": "name",
+  "disable_timestamp": false,
+  "fields": [
+    {
+      "type": "string",
+      "name": "name",
+      "label": "Name",
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "slug",
+      "label": "Slug",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "string",
+      "name": "description",
+      "label": "Description",
+      "optional": true,
+      "sortable": true,
+      "renderer": {
+        "class": "textarea"
+      },
+      "db": {}
+    },
+    {
+      "type": "bool",
+      "name": "for_sale",
+      "label": "For Sale",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "bool",
+      "name": "best_selling",
+      "label": "Best Selling",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "int64",
+      "name": "price",
+      "label": "Price",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "categories",
+      "label": "Categories",
+      "optional": true,
+      "renderer": {},
+      "relation": {
+        "schema": "category",
+        "field": "products",
+        "type": "m2m",
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "collections",
+      "label": "Collections",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "relation": {
+        "schema": "collection",
+        "field": "products",
+        "type": "m2m",
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "file",
+      "name": "featured_image",
+      "label": "Featured Image",
+      "optional": true,
+      "renderer": {
+        "settings": {
+          "type": "image"
+        }
+      },
+      "relation": {
+        "schema": "file",
+        "field": "product_featured_image",
+        "type": "o2m",
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "file",
+      "name": "images",
+      "label": "Images",
+      "multiple": true,
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "relation": {
+        "schema": "file",
+        "field": "product_images",
+        "type": "m2m",
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    },
+    {
+      "type": "text",
+      "name": "content",
+      "label": "Content",
+      "optional": true,
+      "sortable": true,
+      "renderer": {
+        "class": "editor"
+      },
+      "db": {}
+    }
+  ]
+}

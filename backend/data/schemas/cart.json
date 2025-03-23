@@ -1,0 +1,41 @@
+{
+  "name": "cart",
+  "namespace": "carts",
+  "label_field": "hash",
+  "disable_timestamp": false,
+  "fields": [
+    {
+      "type": "string",
+      "name": "hash",
+      "label": "Hash",
+      "unique": true,
+      "optional": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "text",
+      "name": "detail",
+      "label": "Detail",
+      "optional": true,
+      "sortable": true,
+      "renderer": {},
+      "db": {}
+    },
+    {
+      "type": "relation",
+      "name": "order",
+      "label": "Order",
+      "optional": true,
+      "relation": {
+        "schema": "order",
+        "field": "cart",
+        "type": "o2o",
+        "owner": true,
+        "fk_columns": null,
+        "optional": true
+      },
+      "db": {}
+    }
+  ]
+}
