@@ -1,6 +1,6 @@
 services:
-  sunec_backend:
-    container_name: sunec_backend
+  packtech_backend:
+    container_name: packtech_backend
     image: ghcr.io/fastschema/fastschema:latest
     ports:
       - '8000:8000'
@@ -9,19 +9,19 @@ services:
       - ./backend/data:/fastschema/data
     env_file:
       - ./backend/.env
-  sunec_frontend:
+  packtech_frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    container_name: sunec_frontend
+    container_name: packtech_frontend
     working_dir: /app
     volumes:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - '8080:8080'
-    command: sh -c "pnpm install && pnpm dev"
+      - '3000:3000'
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
     env_file:
       - ./frontend/.env
     links:
-      - sunec_backend
+      - packtech_backend
