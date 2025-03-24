@@ -4,9 +4,10 @@ import { Cart, Collection, Menu, Order, Product } from './types';
 import { OrderInfoFormValues } from '@/components/Checkout/data';
 
 export const useFastSchema = async () => {
+  const baseUrl = process.env.NEXT_PUBLIC_FASTSCHEMA_BASE_URL;
   if (!globalThis._fastschema) {
     console.log('> Initializing FastSchema');
-    globalThis._fastschema = new FastSchema(process.env.FASTSCHEMA_BASE_URL as string);
+    globalThis._fastschema = new FastSchema(baseUrl);
     await globalThis._fastschema.init();
   }
 

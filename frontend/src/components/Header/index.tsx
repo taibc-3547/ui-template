@@ -8,12 +8,13 @@ import { useAppSelector } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
-import Image from "next/image";
+import { getCollections } from "@/app/lib/fastschema";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
+  const [options, setOptions] = useState([]);
   const { openCartModal } = useCartModalContext();
 
   const product = useAppSelector((state) => state.cartReducer.items);
@@ -21,6 +22,11 @@ const Header = () => {
 
   const handleOpenCartModal = () => {
     openCartModal();
+  };
+
+  const fetchCollections = async () => {
+    const collections = await getCollections(); // this, in fact, is categories
+    return collections;
   };
 
   // Sticky menu
@@ -36,16 +42,18 @@ const Header = () => {
     window.addEventListener("scroll", handleStickyMenu);
   });
 
-  const options = [
-    { label: "All Categories", value: "0" },
-    { label: "Desktop", value: "1" },
-    { label: "Laptop", value: "2" },
-    { label: "Monitor", value: "3" },
-    { label: "Phone", value: "4" },
-    { label: "Watch", value: "5" },
-    { label: "Mouse", value: "6" },
-    { label: "Tablet", value: "7" },
-  ];
+  useEffect(() => {
+    const fetchOptions = async () => {
+      const collections = await fetchCollections();
+      setOptions([
+        ...collections.map(collection => ({
+          header: collection.name,
+          index: collection.id
+        }))
+      ]);
+    };
+    fetchOptions();
+  }, []);
 
   return (
     <header
