@@ -357,7 +357,7 @@ const MyAccount = () => {
                           fill=""
                         />
                       </svg>
-                      Name: James Septimus
+                      Name: Tai C. Bui
                     </p>
 
                     <p className="flex items-center gap-2.5 text-custom-sm">
@@ -405,7 +405,7 @@ const MyAccount = () => {
                           fill=""
                         />
                       </svg>
-                      Phone: 1234 567890
+                      Phone: (+84) 904 588 186
                     </p>
 
                     <p className="flex gap-2.5 text-custom-sm">
@@ -431,7 +431,7 @@ const MyAccount = () => {
                           </clipPath>
                         </defs>
                       </svg>
-                      Address: 7398 Smoke Ranch RoadLas Vegas, Nevada 89128
+                      Address: 13th Floor, Keangnam Landmark Tower 72, Hanoi, Vietnam
                     </p>
                   </div>
                 </div>
@@ -489,7 +489,7 @@ const MyAccount = () => {
                           fill=""
                         />
                       </svg>
-                      Name: James Septimus
+                      Name: Tai C. Bui
                     </p>
 
                     <p className="flex items-center gap-2.5 text-custom-sm">
@@ -537,7 +537,7 @@ const MyAccount = () => {
                           fill=""
                         />
                       </svg>
-                      Phone: 1234 567890
+                      Phone: (+84) 904 588 186
                     </p>
 
                     <p className="flex gap-2.5 text-custom-sm">
@@ -563,7 +563,7 @@ const MyAccount = () => {
                           </clipPath>
                         </defs>
                       </svg>
-                      Address: 7398 Smoke Ranch RoadLas Vegas, Nevada 89128
+                      Address: 13th Floor, Keangnam Landmark Tower 72, Hanoi, Vietnam
                     </p>
                   </div>
                 </div>
@@ -589,8 +589,8 @@ const MyAccount = () => {
                         type="text"
                         name="firstName"
                         id="firstName"
-                        placeholder="Jhon"
-                        value="Jhon"
+                        placeholder="Type your name"
+                        value="Type your name"
                         className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                       />
                     </div>
@@ -604,8 +604,8 @@ const MyAccount = () => {
                         type="text"
                         name="lastName"
                         id="lastName"
-                        placeholder="Deo"
-                        value="Deo"
+                        placeholder="Type your name"
+                        value="Type your name"
                         className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                       />
                     </div>

@@ -39,7 +39,7 @@ const CounDown = () => {
               Enhance Your Music Experience
             </h2>
 
-            <p>The Havit H206d is a wired PC headphone.</p>
+            <p>Get up to 50% off on our premium winter collection. Limited time offer!</p>
 
             {/* <!-- Countdown timer --> */}
             <div
