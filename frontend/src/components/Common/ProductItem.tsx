@@ -27,6 +27,8 @@ const ProductItem = ({ item }: { item: Product }) => {
       addItemToCart({
         ...item,
         quantity: 1,
+        title: item.title || item.name,
+        discountedPrice: item.discountedPrice || item.price
       })
     );
   };
@@ -37,6 +39,8 @@ const ProductItem = ({ item }: { item: Product }) => {
         ...item,
         status: "available",
         quantity: 1,
+        title: item.title || item.name,
+        discountedPrice: item.discountedPrice || item.price
       })
     );
   };

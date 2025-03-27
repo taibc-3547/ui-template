@@ -2,9 +2,13 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ProductItem from "@/components/Common/ProductItem";
-import shopData from "@/components/Shop/shopData";
+import { getNewArrivals } from "@/app/lib/fastschema";
 
-const NewArrival = () => {
+async function NewArrival() {
+  // Fetch real products
+  const products = await getNewArrivals(4);
+  
+  
   return (
     <section className="overflow-hidden pt-15">
       <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
@@ -31,7 +35,7 @@ const NewArrival = () => {
                   strokeLinecap="round"
                 />
               </svg>
-              This Week’s
+              This Week's
             </span>
             <h2 className="font-semibold text-xl xl:text-heading-5 text-dark">
               New Arrivals
@@ -47,14 +51,30 @@ const NewArrival = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-7.5 gap-y-9">
-          {/* <!-- New Arrivals item --> */}
-          {shopData.map((item, key) => (
-            <ProductItem item={item} key={key} />
+          {products.map((product, key) => (
+            <ProductItem 
+              key={key}
+              item={{
+                id: Number(product.id),
+                name: product.name,
+                price: product.price,
+                discountedPrice: product.price,
+                title: product.name,
+                reviews: 0,
+                slug: product.slug,
+                featured_image: product.featured_image,
+                images: product.images.map(img => img.url),
+                imgs: {
+                  thumbnails: [product.featured_image],
+                  previews: (product.images || []).map(img => img.url) || [product.featured_image]
+                }
+              }} 
+            />
           ))}
         </div>
       </div>
     </section>
   );
-};
+}
 
 export default NewArrival;

@@ -255,3 +255,18 @@ export async function getProducts({
 
   return products.items;
 }
+
+export async function getNewArrivals(limit: number = 4): Promise<Product[]> {
+  const fastschema = await useFastSchema();
+  
+  const products = await fastschema.schema('product').get({
+    select: 'id,name,slug,featured_image,images,price,description,content',
+    limit,
+    filter: {
+      for_sale: true
+    },
+    sort: '-id' // should be created_at instead, but it's not sortable for now
+  });
+
+  return products.items;
+}
