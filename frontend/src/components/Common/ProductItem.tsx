@@ -25,10 +25,25 @@ const ProductItem = ({ item }: { item: Product }) => {
   const handleAddToCart = () => {
     dispatch(
       addItemToCart({
-        ...item,
+        id: item.id.toString(),
         quantity: 1,
-        title: item.title || item.name,
-        discountedPrice: item.discountedPrice || item.price
+        cost: {
+          totalAmount: {
+            amount: item.price.toString(),
+            currencyCode: "USD"
+          }
+        },
+        merchandise: {
+          id: item.id.toString(),
+          title: item.name,
+          selectedOptions: [],
+          product: {
+            id: item.id.toString(),
+            handle: item.slug,
+            title: item.name,
+            featuredImage: item.featured_image
+          }
+        }
       })
     );
   };

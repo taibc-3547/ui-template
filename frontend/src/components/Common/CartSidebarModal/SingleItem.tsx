@@ -10,6 +10,8 @@ const SingleItem = ({ item, removeItemFromCart }) => {
     dispatch(removeItemFromCart(item.id));
   };
 
+  console.log("item", item);
+
   return (
     <div className="flex items-center justify-between gap-5">
       <div className="w-full flex items-center gap-6">

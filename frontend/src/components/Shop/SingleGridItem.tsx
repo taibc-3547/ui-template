@@ -24,11 +24,25 @@ const SingleGridItem = ({ item }: { item: Product }) => {
   const handleAddToCart = () => {
     dispatch(
       addItemToCart({
-        ...item,
-        id: Number(item.id), // Convert string id to number
+        id: item.id.toString(),
         quantity: 1,
-        title: item.name, // Use item name as title
-        discountedPrice: item.price // Use actual price
+        cost: {
+          totalAmount: {
+            amount: item.price.toString(),
+            currencyCode: "USD"
+          }
+        },
+        merchandise: {
+          id: item.id.toString(),
+          title: item.name,
+          selectedOptions: [],
+          product: {
+            id: item.id.toString(),
+            handle: item.slug,
+            title: item.name,
+            featuredImage: item.featured_image
+          }
+        }
       })
     );
   };
