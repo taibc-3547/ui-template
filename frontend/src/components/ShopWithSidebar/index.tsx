@@ -25,6 +25,12 @@ const ShopWithSidebar = () => {
   const [reverse, setReverse] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Add new pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(9); // Number of items per page
+  const [totalItems, setTotalItems] = useState(0);
+
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
       setStickyMenu(true);
@@ -159,6 +165,50 @@ const ShopWithSidebar = () => {
     setSelectedCategory('');
     setSortKey('');
     setReverse(false);
+  };
+
+  // Helper function to generate page numbers array
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is less than max visible
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Complex pagination logic for many pages
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        pageNumbers.push(currentPage - 1);
+        pageNumbers.push(currentPage);
+        pageNumbers.push(currentPage + 1);
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      }
+    }
+    
+    return pageNumbers;
+  };
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
   };
 
   return (
@@ -391,11 +441,10 @@ const ShopWithSidebar = () => {
                   <ul className="flex items-center">
                     <li>
                       <button
-                        id="paginationLeft"
-                        aria-label="button for pagination left"
-                        type="button"
-                        disabled
-                        className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px disabled:text-gray-4"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue disabled:hover:bg-transparent disabled:hover:text-gray-4"
+                        aria-label="Previous page"
                       >
                         <svg
                           className="fill-current"
@@ -413,75 +462,31 @@ const ShopWithSidebar = () => {
                       </button>
                     </li>
 
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] bg-blue text-white hover:text-white hover:bg-blue"
-                      >
-                        1
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] hover:text-white hover:bg-blue"
-                      >
-                        2
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] hover:text-white hover:bg-blue"
-                      >
-                        3
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] hover:text-white hover:bg-blue"
-                      >
-                        4
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] hover:text-white hover:bg-blue"
-                      >
-                        5
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] hover:text-white hover:bg-blue"
-                      >
-                        ...
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        href="#"
-                        className="flex py-1.5 px-3.5 duration-200 rounded-[3px] hover:text-white hover:bg-blue"
-                      >
-                        10
-                      </a>
-                    </li>
+                    {getPageNumbers().map((pageNum, index) => (
+                      <li key={index}>
+                        {pageNum === '...' ? (
+                          <span className="flex py-1.5 px-3.5">...</span>
+                        ) : (
+                          <button
+                            onClick={() => handlePageChange(Number(pageNum))}
+                            className={`flex py-1.5 px-3.5 duration-200 rounded-[3px] ${
+                              currentPage === pageNum
+                                ? 'bg-blue text-white'
+                                : 'hover:text-white hover:bg-blue'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        )}
+                      </li>
+                    ))}
 
                     <li>
                       <button
-                        id="paginationLeft"
-                        aria-label="button for pagination left"
-                        type="button"
-                        className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] hover:text-white hover:bg-blue disabled:text-gray-4"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue disabled:hover:bg-transparent disabled:hover:text-gray-4"
+                        aria-label="Next page"
                       >
                         <svg
                           className="fill-current"
