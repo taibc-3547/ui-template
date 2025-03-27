@@ -96,36 +96,6 @@ export const selectTotalPrice = createSelector([selectCartItems], (items) => {
   }, 0);
 });
 
-// Helper function to check if prices need updating
-export const checkAndUpdatePrices = async (items: CartItem[]) => {
-  try {
-    // Fetch current prices for all items in cart
-    const itemIds = items.map(item => item.id);
-    const response = await fetch('/api/products/prices', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ids: itemIds }),
-    });
-
-    if (!response.ok) throw new Error('Failed to fetch updated prices');
-
-    const currentPrices = await response.json();
-    
-    // Find items with price changes
-    const priceUpdates = currentPrices.filter(price => {
-      const cartItem = items.find(item => item.id === price.id);
-      return cartItem && cartItem.cost.totalAmount.amount !== price.cost.totalAmount.amount;
-    });
-
-    return priceUpdates;
-  } catch (error) {
-    console.error('Error checking prices:', error);
-    return [];
-  }
-};
-
 export const {
   addItemToCart,
   removeItemFromCart,

@@ -1,19 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import {
   removeItemFromCart,
   updateCartItemQuantity,
+  updateItemPrices,
 } from "@/redux/features/cart-slice";
+import { getProduct } from "@/app/lib/fastschema";
 
 import Image from "next/image";
 
 const SingleItem = ({ item }) => {
   const [quantity, setQuantity] = useState(item.quantity);
+  const [isCheckingPrice, setIsCheckingPrice] = useState(false);
 
-  console.log("sigle item:", item);
+  // console.log("sigle item:", item);
 
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    const checkProductStatus = async () => {
+      try {
+        setIsCheckingPrice(true);
+        const currentProduct = await getProduct(item.merchandise.product.slug);
+        
+        if (!currentProduct) {
+          // Product no longer exists, remove from cart
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        if (!currentProduct.for_sale) {
+          // Product is no longer for sale, remove from cart
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        // console.log("currentProduct:", currentProduct);
+
+        // Check if price has changed
+        if (currentProduct.price !== item.cost.totalAmount.amount) {
+          dispatch(updateItemPrices([{
+            id: item.id,
+            updatedCost: {
+              totalAmount: {
+                amount: currentProduct.price.toString(),
+                currencyCode: 'USD'
+              }
+            }
+          }]));
+        }
+      } catch (error) {
+        console.error('Failed to check product status:', error);
+      } finally {
+        setIsCheckingPrice(false);
+      }
+    };
+
+    checkProductStatus();
+  }, [item.id, item.merchandise.product.slug, dispatch]);
 
   const handleRemoveFromCart = () => {
     dispatch(removeItemFromCart(item.id));
@@ -52,7 +97,14 @@ const SingleItem = ({ item }) => {
       </div>
 
       <div className="min-w-[180px]">
-        <p className="text-dark">${item.cost.totalAmount.amount}</p>
+        <p className="text-dark">
+          ${item.cost.totalAmount.amount}
+          {isCheckingPrice && (
+            <span className="ml-2 text-sm text-gray-500">
+              Checking availability...
+            </span>
+          )}
+        </p>
       </div>
 
       <div className="min-w-[275px]">

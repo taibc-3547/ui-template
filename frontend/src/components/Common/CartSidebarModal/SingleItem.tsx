@@ -1,16 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import Image from "next/image";
+import { getProduct } from "@/app/lib/fastschema";
+import { updateItemPrices } from "@/redux/features/cart-slice";
 
-const SingleItem = ({ item, removeItemFromCart }) => {
+const SingleItem = ({ item, removeItemFromCart, isCartModalOpen }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const [isCheckingPrice, setIsCheckingPrice] = useState(false);
 
   const handleRemoveFromCart = () => {
     dispatch(removeItemFromCart(item.id));
   };
 
-  console.log("item", item);
+  // console.log("cart sidebar modal item", item);
+
+  useEffect(() => {
+    console.log("cart sidebar modal use effect");
+    const checkProductStatus = async () => {
+      try {
+        console.log("checking product status");
+        setIsCheckingPrice(true);
+        const currentProduct = await getProduct(item.merchandise.product.slug);
+        console.log("currentProduct", currentProduct);
+        
+        if (!currentProduct) {
+          // Product no longer exists, remove from cart 
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        if (!currentProduct.for_sale) {
+          // Product is no longer for sale, remove from cart
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        // Check if price has changed
+        if (currentProduct.price !== item.cost.totalAmount.amount) {
+          dispatch(updateItemPrices([{
+            id: item.id,
+            updatedCost: {
+              totalAmount: {
+                amount: currentProduct.price.toString(),
+                currencyCode: 'USD'
+              }
+            }
+          }]));
+        }
+      } catch (error) {
+        console.error('Failed to check product status:', error);
+      } finally {
+        setIsCheckingPrice(false);
+      }
+    };
+
+    checkProductStatus();
+  }, [item.id, item.merchandise.product.slug, dispatch, isCartModalOpen]);
  
   return (
     <div className="flex items-center justify-between gap-5">

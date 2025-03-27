@@ -13,7 +13,7 @@ import Image from "next/image";
 const SingleGridItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
 
-  console.log("SingleGridItem item", item);
+  // console.log("SingleGridItem item", item);
 
   const dispatch = useDispatch<AppDispatch>();
 

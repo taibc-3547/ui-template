@@ -84,6 +84,7 @@ const CartSidebarModal = () => {
                     key={key}
                     item={item}
                     removeItemFromCart={removeItemFromCart}
+                    isCartModalOpen={isCartModalOpen}
                   />
                 ))
               ) : (
