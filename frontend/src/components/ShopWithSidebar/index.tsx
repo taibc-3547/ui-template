@@ -25,11 +25,13 @@ const ShopWithSidebar = () => {
   const [reverse, setReverse] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Add new pagination states
+  // Update pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(9); // Number of items per page
+  const [pageSize] = useState(18); // Match the limit in API calls
   const [totalItems, setTotalItems] = useState(0);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
@@ -122,25 +124,30 @@ const ShopWithSidebar = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      let fetchedProducts: Product[];
+      let response: { items: Product[]; total: number };
 
       if (selectedCategory) {
         // Fetch products by category
-        fetchedProducts = await getCollectionProducts({
+        response = await getCollectionProducts({
           category: selectedCategory,
           sortKey,
-          reverse
+          reverse,
+          page: currentPage,
+          limit: pageSize
         });
       } else {
         // Fetch all products with search and sort
-        fetchedProducts = await getProducts({
+        response = await getProducts({
           query: searchQuery,
           sortKey,
-          reverse
+          reverse,
+          page: currentPage,
+          limit: pageSize
         });
       }
 
-      setProducts(fetchedProducts);
+      setProducts(response.items);
+      setTotalItems(response.total);
       setError(null);
     } catch (err) {
       setError('Failed to load products');
@@ -150,9 +157,14 @@ const ShopWithSidebar = () => {
     }
   };
 
-  // Effect to fetch products when filters change
+  // Effect to fetch products when filters or pagination changes
   useEffect(() => {
     fetchProducts();
+  }, [selectedCategory, sortKey, reverse, searchQuery, currentPage]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [selectedCategory, sortKey, reverse, searchQuery]);
 
   // Handle category selection
@@ -209,6 +221,7 @@ const ShopWithSidebar = () => {
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -327,8 +340,8 @@ const ShopWithSidebar = () => {
                     />
 
                     <p>
-                      Showing <span className="text-dark">{products.length}</span>{" "}
-                      Products
+                      Showing <span className="text-dark">{products.length}</span> of{' '}
+                      <span className="text-dark">{totalItems}</span> Products
                     </p>
                   </div>
 
@@ -436,76 +449,78 @@ const ShopWithSidebar = () => {
               {/* <!-- Products Grid Tab Content End --> */}
 
               {/* <!-- Products Pagination Start --> */}
-              <div className="flex justify-center mt-15">
-                <div className="bg-white shadow-1 rounded-md p-2">
-                  <ul className="flex items-center">
-                    <li>
-                      <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue disabled:hover:bg-transparent disabled:hover:text-gray-4"
-                        aria-label="Previous page"
-                      >
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+              {totalItems > 0 && (
+                <div className="flex justify-center mt-15">
+                  <div className="bg-white shadow-1 rounded-md p-2">
+                    <ul className="flex items-center">
+                      <li>
+                        <button
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue disabled:hover:bg-transparent disabled:hover:text-gray-4"
+                          aria-label="Previous page"
                         >
-                          <path
-                            d="M12.1782 16.1156C12.0095 16.1156 11.8407 16.0594 11.7282 15.9187L5.37197 9.45C5.11885 9.19687 5.11885 8.80312 5.37197 8.55L11.7282 2.08125C11.9813 1.82812 12.3751 1.82812 12.6282 2.08125C12.8813 2.33437 12.8813 2.72812 12.6282 2.98125L6.72197 9L12.6563 15.0187C12.9095 15.2719 12.9095 15.6656 12.6563 15.9187C12.4876 16.0312 12.347 16.1156 12.1782 16.1156Z"
-                            fill=""
-                          />
-                        </svg>
-                      </button>
-                    </li>
-
-                    {getPageNumbers().map((pageNum, index) => (
-                      <li key={index}>
-                        {pageNum === '...' ? (
-                          <span className="flex py-1.5 px-3.5">...</span>
-                        ) : (
-                          <button
-                            onClick={() => handlePageChange(Number(pageNum))}
-                            className={`flex py-1.5 px-3.5 duration-200 rounded-[3px] ${
-                              currentPage === pageNum
-                                ? 'bg-blue text-white'
-                                : 'hover:text-white hover:bg-blue'
-                            }`}
+                          <svg
+                            className="fill-current"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            {pageNum}
-                          </button>
-                        )}
+                            <path
+                              d="M12.1782 16.1156C12.0095 16.1156 11.8407 16.0594 11.7282 15.9187L5.37197 9.45C5.11885 9.19687 5.11885 8.80312 5.37197 8.55L11.7282 2.08125C11.9813 1.82812 12.3751 1.82812 12.6282 2.08125C12.8813 2.33437 12.8813 2.72812 12.6282 2.98125L6.72197 9L12.6563 15.0187C12.9095 15.2719 12.9095 15.6656 12.6563 15.9187C12.4876 16.0312 12.347 16.1156 12.1782 16.1156Z"
+                              fill=""
+                            />
+                          </svg>
+                        </button>
                       </li>
-                    ))}
 
-                    <li>
-                      <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue disabled:hover:bg-transparent disabled:hover:text-gray-4"
-                        aria-label="Next page"
-                      >
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                      {getPageNumbers().map((pageNum, index) => (
+                        <li key={index}>
+                          {pageNum === '...' ? (
+                            <span className="flex py-1.5 px-3.5">...</span>
+                          ) : (
+                            <button
+                              onClick={() => handlePageChange(Number(pageNum))}
+                              className={`flex py-1.5 px-3.5 duration-200 rounded-[3px] ${
+                                currentPage === pageNum
+                                  ? 'bg-blue text-white'
+                                  : 'hover:text-white hover:bg-blue'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          )}
+                        </li>
+                      ))}
+
+                      <li>
+                        <button
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue disabled:hover:bg-transparent disabled:hover:text-gray-4"
+                          aria-label="Next page"
                         >
-                          <path
-                            d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.0312 5.99072 16.1156 5.82197 16.1156Z"
-                            fill=""
-                          />
-                        </svg>
-                      </button>
-                    </li>
-                  </ul>
+                          <svg
+                            className="fill-current"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.0312 5.99072 16.1156 5.82197 16.1156Z"
+                              fill=""
+                            />
+                          </svg>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
+              )}
               {/* <!-- Products Pagination End --> */}
             </div>
             {/* // <!-- Content End --> */}
