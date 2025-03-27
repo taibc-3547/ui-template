@@ -106,13 +106,17 @@ export async function getCollectionProducts({
   collection,
   category,
   reverse,
-  sortKey
+  sortKey,
+  page = 1,
+  limit = 18
 }: {
   collection?: string;
   category?: string;
   reverse?: boolean;
   sortKey?: string;
-}): Promise<Product[]> {
+  page?: number;
+  limit?: number;
+}): Promise<{ items: Product[]; total: number }> {
   const fastschema = await useFastSchema();
   const filter: Record<string, any> = {};
   if (collection) {
@@ -131,12 +135,21 @@ export async function getCollectionProducts({
     sort = '-' + sort;
   }
 
+  const offset = (page - 1) * limit;
+
   const products = await fastschema.schema('product').get({
     select: 'id,name,slug,featured_image,images,price,description,content',
+    limit,
+    offset,
     filter,
-    sort
-  }) as { items: Product[] };
-  return products.items;
+    sort,
+    count: true
+  });
+
+  return {
+    items: products.items,
+    total: products.total
+  };
 }
 
 export async function getCollections(): Promise<Collection[]> {
@@ -223,12 +236,16 @@ export async function getProductRecommendations(product: Product): Promise<Produ
 export async function getProducts({
   query,
   reverse,
-  sortKey
+  sortKey,
+  page = 1,
+  limit = 18
 }: {
   query?: string;
   reverse?: boolean;
   sortKey?: string;
-}): Promise<Product[]> {
+  page?: number;
+  limit?: number;
+}): Promise<{ items: Product[]; total: number }> {
   const fastschema = await useFastSchema();
   const filter: Record<string, any> = {};
   if (query) {
@@ -246,11 +263,33 @@ export async function getProducts({
     sort = '-' + sort;
   }
 
+  const offset = (page - 1) * limit;
+
   const products = await fastschema.schema('product').get({
     select: 'id,name,slug,featured_image,images,price,description,content',
-    limit: 18,
+    limit,
+    offset,
     filter,
-    sort
+    sort,
+    count: true
+  });
+
+  return {
+    items: products.items,
+    total: products.total
+  };
+}
+
+export async function getNewArrivals(limit: number = 4): Promise<Product[]> {
+  const fastschema = await useFastSchema();
+  
+  const products = await fastschema.schema('product').get({
+    select: 'id,name,slug,featured_image,images,price,description,content',
+    limit,
+    filter: {
+      for_sale: true
+    },
+    sort: '-id' // should be created_at instead, but it's not sortable for now
   });
 
   return products.items;

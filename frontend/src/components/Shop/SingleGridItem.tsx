@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Product } from "@/types/product";
+import { CartItem, Product } from "@/app/lib/fastschema/types";
 import { useModalContext } from "@/app/context/QuickViewModalContext";
 import { updateQuickView } from "@/redux/features/quickView-slice";
 import { addItemToCart } from "@/redux/features/cart-slice";
@@ -13,6 +13,8 @@ import Image from "next/image";
 const SingleGridItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
 
+  // console.log("SingleGridItem item", item);
+
   const dispatch = useDispatch<AppDispatch>();
 
   // update the QuickView state
@@ -24,9 +26,28 @@ const SingleGridItem = ({ item }: { item: Product }) => {
   const handleAddToCart = () => {
     dispatch(
       addItemToCart({
-        ...item,
+        id: item.id.toString(),
         quantity: 1,
-      })
+        cost: {
+          totalAmount: {
+            amount: item.price.toString(),
+            currencyCode: "USD"
+          }
+        },
+        merchandise: {
+          id: item.id.toString(),
+          title: item.name,
+          selectedOptions: [],
+          product: {
+            id: item.id.toString(),
+            handle: item.slug,
+            title: item.name,
+            featuredImage: {
+              url: item.images[0].url
+            }
+          }
+        }
+      } as CartItem)
     );
   };
 
@@ -34,8 +55,11 @@ const SingleGridItem = ({ item }: { item: Product }) => {
     dispatch(
       addItemToWishlist({
         ...item,
+        id: Number(item.id), // Convert string id to number like in handleAddToCart
         status: "available",
         quantity: 1,
+        title: item.name, // Use item name like in handleAddToCart
+        discountedPrice: item.price // Use actual price like in handleAddToCart
       })
     );
   };
@@ -43,7 +67,7 @@ const SingleGridItem = ({ item }: { item: Product }) => {
   return (
     <div className="group">
       <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-white shadow-1 min-h-[270px] mb-4">
-        <Image src={item.imgs.previews[0]} alt="" width={250} height={250} />
+        <Image src={item.images[0].url} alt="" width={250} height={250} />
 
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
           <button
@@ -144,15 +168,15 @@ const SingleGridItem = ({ item }: { item: Product }) => {
           />
         </div>
 
-        <p className="text-custom-sm">({item.reviews})</p>
+        {/* <p className="text-custom-sm">({item.reviews})</p> */}
       </div>
 
       <h3 className="font-medium text-dark ease-out duration-200 hover:text-blue mb-1.5">
-        <Link href="/shop-details"> {item.title} </Link>
+        <Link href="/shop-details"> {item.name} </Link>
       </h3>
 
       <span className="flex items-center gap-2 font-medium text-lg">
-        <span className="text-dark">${item.discountedPrice}</span>
+        <span className="text-dark">${item.price}</span>
         <span className="text-dark-4 line-through">${item.price}</span>
       </span>
     </div>

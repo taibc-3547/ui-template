@@ -1,11 +1,17 @@
-const data = [
+export interface CategoryItem {
+  title: string;
+  id: number;
+  img: string;
+}
+
+const mockData: CategoryItem[] = [
   {
     title: "Televisions",
     id: 1,
     img: "/images/categories/categories-01.png",
   },
   {
-    title: "Laptop & PC",
+    title: "Laptop & PC", 
     id: 2,
     img: "/images/categories/categories-02.png",
   },
@@ -41,4 +47,4 @@ const data = [
   },
 ];
 
-export default data;
+export default mockData;

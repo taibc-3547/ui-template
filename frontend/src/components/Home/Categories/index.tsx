@@ -1,16 +1,39 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useCallback, useRef, useEffect } from "react";
-import data from "./categoryData";
-import Image from "next/image";
+import { useCallback, useRef, useEffect, useState } from "react";
+import { getCollections } from "@/app/lib/fastschema";
 
 // Import Swiper styles
 import "swiper/css/navigation";
 import "swiper/css";
 import SingleItem from "./SingleItem";
+import { CategoryItem } from "./categoryData";
 
 const Categories = () => {
   const sliderRef = useRef(null);
+  const [categories, setCategories] = useState<CategoryItem[]>([]); // Add state for categories
+
+  // Add fetch function
+  const fetchCategories = async () => {
+    const collections = await getCollections();
+    return collections;
+  };
+
+  // Add useEffect to fetch categories
+  useEffect(() => {
+    const loadCategories = async () => {
+      const fetchedCategories = await fetchCategories();
+      // Transform the data to match the expected format
+      const formattedCategories = fetchedCategories.map((category) => ({
+        id: category.id,
+        title: category.name,
+        // @ts-ignore
+        img: category.image ?? "/images/categories/category-1.png"
+      }));
+      setCategories(formattedCategories);
+    };
+    loadCategories();
+  }, []);
 
   const handlePrev = useCallback(() => {
     if (!sliderRef.current) return;
@@ -134,7 +157,7 @@ const Categories = () => {
               },
             }}
           >
-            {data.map((item, key) => (
+            {categories.map((item, key) => (
               <SwiperSlide key={key}>
                 <SingleItem item={item} />
               </SwiperSlide>

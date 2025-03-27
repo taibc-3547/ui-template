@@ -1,5 +1,5 @@
+import { Product } from "@/app/lib/fastschema/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Product } from "@/types/product";
 
 type InitialState = {
   value: Product;
@@ -7,6 +7,11 @@ type InitialState = {
 
 const initialState = {
   value: {
+    slug: "",
+    for_sale: false,
+    name: "",
+    description: "",
+    featured_image: "",
     title: "",
     reviews: 0,
     price: 0,
@@ -15,7 +20,7 @@ const initialState = {
     id: 0,
     images: [],
     imgs: { thumbnails: [], previews: [] },
-  } as Product,
+  } as unknown as Product,
 } as InitialState;
 
 export const quickView = createSlice({

@@ -1,27 +1,75 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import Image from "next/image";
+import { getProduct } from "@/app/lib/fastschema";
+import { updateItemPrices } from "@/redux/features/cart-slice";
 
-const SingleItem = ({ item, removeItemFromCart }) => {
+const SingleItem = ({ item, removeItemFromCart, isCartModalOpen }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const [isCheckingPrice, setIsCheckingPrice] = useState(false);
 
   const handleRemoveFromCart = () => {
     dispatch(removeItemFromCart(item.id));
   };
 
+  // console.log("cart sidebar modal item", item);
+
+  useEffect(() => {
+    console.log("cart sidebar modal use effect");
+    const checkProductStatus = async () => {
+      try {
+        console.log("checking product status");
+        setIsCheckingPrice(true);
+        const currentProduct = await getProduct(item.merchandise.product.slug);
+        console.log("currentProduct", currentProduct);
+        
+        if (!currentProduct) {
+          // Product no longer exists, remove from cart 
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        if (!currentProduct.for_sale) {
+          // Product is no longer for sale, remove from cart
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        // Check if price has changed
+        if (currentProduct.price !== item.cost.totalAmount.amount) {
+          dispatch(updateItemPrices([{
+            id: item.id,
+            updatedCost: {
+              totalAmount: {
+                amount: currentProduct.price.toString(),
+                currencyCode: 'USD'
+              }
+            }
+          }]));
+        }
+      } catch (error) {
+        console.error('Failed to check product status:', error);
+      } finally {
+        setIsCheckingPrice(false);
+      }
+    };
+
+    checkProductStatus();
+  }, [item.id, item.merchandise.product.slug, dispatch, isCartModalOpen]);
+ 
   return (
     <div className="flex items-center justify-between gap-5">
       <div className="w-full flex items-center gap-6">
         <div className="flex items-center justify-center rounded-[10px] bg-gray-3 max-w-[90px] w-full h-22.5">
-          <Image src={item.imgs?.thumbnails[0]} alt="product" width={100} height={100} />
+          <Image src={item.merchandise.product.featuredImage.url} alt="product" width={100} height={100} />
         </div>
 
         <div>
           <h3 className="font-medium text-dark mb-1 ease-out duration-200 hover:text-blue">
             <a href="#"> {item.title} </a>
           </h3>
-          <p className="text-custom-sm">Price: ${item.discountedPrice}</p>
+          <p className="text-custom-sm">Price: ${item.cost.totalAmount.amount} x {item.quantity}</p>
         </div>
       </div>
 

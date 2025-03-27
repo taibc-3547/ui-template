@@ -1,33 +1,38 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { CartItem } from "@/app/lib/fastschema/types";
+import Cookies from 'js-cookie';
 
 type InitialState = {
   items: CartItem[];
 };
 
-type CartItem = {
-  id: number;
-  title: string;
-  price: number;
-  discountedPrice: number;
-  quantity: number;
-  imgs?: {
-    thumbnails: string[];
-    previews: string[];
-  };
+// Load initial state from cookies if available
+const loadInitialState = (): { items: CartItem[] } => {
+  if (typeof window !== 'undefined') {
+    const savedCart = Cookies.get('cart');
+    return savedCart ? JSON.parse(savedCart) : { items: [] };
+  }
+  return { items: [] };
 };
 
-const initialState: InitialState = {
-  items: [],
+// Helper function to save cart to cookies
+const saveCartToCookies = (state: InitialState) => {
+  Cookies.set('cart', JSON.stringify(state), {
+    expires: 7, // 7 days
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production'
+  });
 };
+
+const initialState: InitialState = loadInitialState();
 
 export const cart = createSlice({
   name: "cart",
   initialState,
   reducers: {
     addItemToCart: (state, action: PayloadAction<CartItem>) => {
-      const { id, title, price, quantity, discountedPrice, imgs } =
-        action.payload;
+      const { id, merchandise, quantity, cost } = action.payload;
       const existingItem = state.items.find((item) => item.id === id);
 
       if (existingItem) {
@@ -35,21 +40,23 @@ export const cart = createSlice({
       } else {
         state.items.push({
           id,
-          title,
-          price,
+          merchandise,
           quantity,
-          discountedPrice,
-          imgs,
+          cost
         });
       }
+      // Save to cookies
+      saveCartToCookies(state);
     },
-    removeItemFromCart: (state, action: PayloadAction<number>) => {
+    removeItemFromCart: (state, action: PayloadAction<string>) => {
       const itemId = action.payload;
       state.items = state.items.filter((item) => item.id !== itemId);
+      // Save to cookies
+      saveCartToCookies(state);
     },
     updateCartItemQuantity: (
       state,
-      action: PayloadAction<{ id: number; quantity: number }>
+      action: PayloadAction<{ id: string; quantity: number }>
     ) => {
       const { id, quantity } = action.payload;
       const existingItem = state.items.find((item) => item.id === id);
@@ -57,10 +64,26 @@ export const cart = createSlice({
       if (existingItem) {
         existingItem.quantity = quantity;
       }
+      // Save to cookies
+      saveCartToCookies(state);
     },
-
     removeAllItemsFromCart: (state) => {
       state.items = [];
+      // Remove cookie
+      Cookies.remove('cart');
+    },
+    // New reducer to update item prices
+    updateItemPrices: (
+      state,
+      action: PayloadAction<Array<{ id: string; updatedCost: CartItem['cost'] }>>
+    ) => {
+      action.payload.forEach(({ id, updatedCost }) => {
+        const item = state.items.find(item => item.id === id);
+        if (item) {
+          item.cost = updatedCost;
+        }
+      });
+      saveCartToCookies(state);
     },
   },
 });
@@ -69,7 +92,7 @@ export const selectCartItems = (state: RootState) => state.cartReducer.items;
 
 export const selectTotalPrice = createSelector([selectCartItems], (items) => {
   return items.reduce((total, item) => {
-    return total + item.discountedPrice * item.quantity;
+    return total + parseFloat(item.cost.totalAmount.amount) * item.quantity;
   }, 0);
 });
 
@@ -78,5 +101,6 @@ export const {
   removeItemFromCart,
   updateCartItemQuantity,
   removeAllItemsFromCart,
+  updateItemPrices,
 } = cart.actions;
 export default cart.reducer;

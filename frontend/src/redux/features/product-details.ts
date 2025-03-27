@@ -1,25 +1,30 @@
+import { Product } from "@/app/lib/fastschema/types";
 import { createSlice } from "@reduxjs/toolkit";
-import { Product } from "@/types/product";
 
 type InitialState = {
   value: Product;
 };
 
-const initialState = {
+const initialState: InitialState = {
   value: {
+    slug: "",
+    for_sale: false,
+    name: "",
+    description: "",
+    featured_image: "",
     title: "",
     reviews: 0,
     price: 0,
     discountedPrice: 0,
     img: "",
-    images: [],
     id: 0,
+    images: [],
     imgs: { thumbnails: [], previews: [] },
-  },
-} as InitialState;
+  } as unknown as Product,
+};
 
 export const productDetails = createSlice({
-  name: "productDetails",
+  name: "productDetails", 
   initialState,
   reducers: {
     updateproductDetails: (_, action) => {

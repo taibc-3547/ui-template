@@ -35,6 +35,7 @@ const CartSidebarModal = () => {
     };
   }, [isCartModalOpen, closeCartModal]);
 
+
   return (
     <div
       className={`fixed top-0 left-0 z-99999 overflow-y-auto no-scrollbar w-full h-screen bg-dark/70 ease-linear duration-300 ${
@@ -83,6 +84,7 @@ const CartSidebarModal = () => {
                     key={key}
                     item={item}
                     removeItemFromCart={removeItemFromCart}
+                    isCartModalOpen={isCartModalOpen}
                   />
                 ))
               ) : (

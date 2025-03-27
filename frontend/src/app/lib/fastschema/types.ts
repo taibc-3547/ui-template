@@ -1,4 +1,5 @@
-import { OrderInfoFormValues } from 'components/checkout/data';
+import { OrderInfoFormValues } from "@/components/Checkout/data";
+
 
 export type Maybe<T> = T | null;
 
@@ -67,9 +68,9 @@ export type Collection = SiteCollection & {
 
 export type Image = {
   url: string;
-  name: string;
-  width: number;
-  height: number;
+  name?: string;
+  width?: number;
+  height?: number;
 };
 
 export type Menu = {

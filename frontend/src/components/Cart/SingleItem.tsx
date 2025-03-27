@@ -1,17 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import {
   removeItemFromCart,
   updateCartItemQuantity,
+  updateItemPrices,
 } from "@/redux/features/cart-slice";
+import { getProduct } from "@/app/lib/fastschema";
 
 import Image from "next/image";
 
 const SingleItem = ({ item }) => {
   const [quantity, setQuantity] = useState(item.quantity);
+  const [isCheckingPrice, setIsCheckingPrice] = useState(false);
+
+  // console.log("sigle item:", item);
 
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    const checkProductStatus = async () => {
+      try {
+        setIsCheckingPrice(true);
+        const currentProduct = await getProduct(item.merchandise.product.slug);
+        
+        if (!currentProduct) {
+          // Product no longer exists, remove from cart
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        if (!currentProduct.for_sale) {
+          // Product is no longer for sale, remove from cart
+          dispatch(removeItemFromCart(item.id));
+          return;
+        }
+
+        // console.log("currentProduct:", currentProduct);
+
+        // Check if price has changed
+        if (currentProduct.price !== item.cost.totalAmount.amount) {
+          dispatch(updateItemPrices([{
+            id: item.id,
+            updatedCost: {
+              totalAmount: {
+                amount: currentProduct.price.toString(),
+                currencyCode: 'USD'
+              }
+            }
+          }]));
+        }
+      } catch (error) {
+        console.error('Failed to check product status:', error);
+      } finally {
+        setIsCheckingPrice(false);
+      }
+    };
+
+    checkProductStatus();
+  }, [item.id, item.merchandise.product.slug, dispatch]);
 
   const handleRemoveFromCart = () => {
     dispatch(removeItemFromCart(item.id));
@@ -37,7 +84,7 @@ const SingleItem = ({ item }) => {
         <div className="flex items-center justify-between gap-5">
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] bg-gray-2 max-w-[80px] w-full h-17.5">
-              <Image width={200} height={200} src={item.imgs?.thumbnails[0]} alt="product" />
+              <Image width={200} height={200} src={item.merchandise.product.featuredImage.url} alt="product" />
             </div>
 
             <div>
@@ -50,7 +97,14 @@ const SingleItem = ({ item }) => {
       </div>
 
       <div className="min-w-[180px]">
-        <p className="text-dark">${item.discountedPrice}</p>
+        <p className="text-dark">
+          ${item.cost.totalAmount.amount}
+          {isCheckingPrice && (
+            <span className="ml-2 text-sm text-gray-500">
+              Checking availability...
+            </span>
+          )}
+        </p>
       </div>
 
       <div className="min-w-[275px]">
@@ -106,7 +160,7 @@ const SingleItem = ({ item }) => {
       </div>
 
       <div className="min-w-[200px]">
-        <p className="text-dark">${item.discountedPrice * quantity}</p>
+        <p className="text-dark">${item.cost.totalAmount.amount * quantity}</p>
       </div>
 
       <div className="min-w-[50px] flex justify-end">
