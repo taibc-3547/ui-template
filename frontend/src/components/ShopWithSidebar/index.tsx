@@ -7,7 +7,6 @@ import GenderDropdown from "./GenderDropdown";
 import SizeDropdown from "./SizeDropdown";
 import ColorsDropdwon from "./ColorsDropdwon";
 import PriceDropdown from "./PriceDropdown";
-import shopData from "../Shop/shopData";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
 import { getCollections, getProducts, getCollectionProducts } from "@/app/lib/fastschema";
@@ -155,6 +154,13 @@ const ShopWithSidebar = () => {
     setSelectedCategory(categorySlug);
   };
 
+  const handleCleanAll = () => {
+    setSearchQuery('');
+    setSelectedCategory('');
+    setSortKey('');
+    setReverse(false);
+  };
+
   return (
     <>
       <Breadcrumb
@@ -210,7 +216,12 @@ const ShopWithSidebar = () => {
                   <div className="bg-white shadow-1 rounded-lg py-4 px-5">
                     <div className="flex items-center justify-between">
                       <p>Filters:</p>
-                      <button className="text-blue">Clean All</button>
+                      <button 
+                        className="text-blue hover:text-blue-600" 
+                        onClick={handleCleanAll}
+                      >
+                        Clean All
+                      </button>
                     </div>
                   </div>
 
