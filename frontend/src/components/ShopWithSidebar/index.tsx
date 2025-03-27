@@ -10,11 +10,16 @@ import PriceDropdown from "./PriceDropdown";
 import shopData from "../Shop/shopData";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
+import { getCollections } from "@/app/lib/fastschema";
+import { Collection } from "@/app/lib/fastschema/types";
 
 const ShopWithSidebar = () => {
   const [productStyle, setProductStyle] = useState("grid");
   const [productSidebar, setProductSidebar] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
+  const [categories, setCategories] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
@@ -28,39 +33,6 @@ const ShopWithSidebar = () => {
     { label: "Latest Products", value: "0" },
     { label: "Best Selling", value: "1" },
     { label: "Old Products", value: "2" },
-  ];
-
-  const categories = [
-    {
-      name: "Desktop",
-      products: 10,
-      isRefined: true,
-    },
-    {
-      name: "Laptop",
-      products: 12,
-      isRefined: false,
-    },
-    {
-      name: "Monitor",
-      products: 30,
-      isRefined: false,
-    },
-    {
-      name: "UPS",
-      products: 23,
-      isRefined: false,
-    },
-    {
-      name: "Phone",
-      products: 10,
-      isRefined: false,
-    },
-    {
-      name: "Watch",
-      products: 13,
-      isRefined: false,
-    },
   ];
 
   const genders = [
@@ -96,6 +68,32 @@ const ShopWithSidebar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const collections = await getCollections();
+        setCategories(collections.map(cat => ({
+          id: cat.id,
+          path: cat.slug,
+          name: cat.name,
+          products: 0,
+          isRefined: false,
+          slug: cat.slug,
+          description: cat.description || '',
+          updatedAt: cat.updatedAt || new Date().toISOString()
+        })));
+      } catch (error) {
+        setError('Failed to load categories');
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <>
@@ -157,7 +155,13 @@ const ShopWithSidebar = () => {
                   </div>
 
                   {/* <!-- category box --> */}
-                  <CategoryDropdown categories={categories} />
+                  {loading ? (
+                    <div>Loading categories...</div>
+                  ) : error ? (
+                    <div>Error: {error}</div>
+                  ) : (
+                    <CategoryDropdown categories={categories} />
+                  )}
 
                   {/* <!-- gender box --> */}
                   <GenderDropdown genders={genders} />

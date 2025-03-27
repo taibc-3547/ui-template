@@ -1,4 +1,5 @@
-import { OrderInfoFormValues } from 'components/checkout/data';
+import { OrderInfoFormValues } from "@/components/Checkout/data";
+
 
 export type Maybe<T> = T | null;
 
