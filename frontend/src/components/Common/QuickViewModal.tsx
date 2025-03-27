@@ -10,7 +10,7 @@ import { usePreviewSlider } from "@/app/context/PreviewSliderContext";
 import { resetQuickView } from "@/redux/features/quickView-slice";
 import { updateproductDetails } from "@/redux/features/product-details";
 import { getProduct } from "@/app/lib/fastschema";
-import { Product } from "@/app/lib/fastschema/types";
+import { CartItem, Product } from "@/app/lib/fastschema/types";
 
 const QuickViewModal = () => {
   const { isModalOpen, closeModal } = useModalContext();
@@ -71,7 +71,7 @@ const QuickViewModal = () => {
               featuredImage: productData.featured_image
             }
           }
-        })
+        } as CartItem)
       );
       closeModal();
     }

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Product } from "@/app/lib/fastschema/types";
+import { CartItem, Product } from "@/app/lib/fastschema/types";
 import { useModalContext } from "@/app/context/QuickViewModalContext";
 import { updateQuickView } from "@/redux/features/quickView-slice";
 import { addItemToCart } from "@/redux/features/cart-slice";
@@ -43,7 +43,7 @@ const SingleGridItem = ({ item }: { item: Product }) => {
             featuredImage: item.featured_image
           }
         }
-      })
+      } as CartItem)
     );
   };
 

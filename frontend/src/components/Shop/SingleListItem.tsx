@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
 import Image from "next/image";
-import { Product } from "@/app/lib/fastschema/types";
+import { CartItem, Product } from "@/app/lib/fastschema/types";
 
 const SingleListItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
@@ -43,7 +43,7 @@ const SingleListItem = ({ item }: { item: Product }) => {
             featuredImage: item.featured_image
           }
         }
-      })
+      } as CartItem)
     );
   };
 

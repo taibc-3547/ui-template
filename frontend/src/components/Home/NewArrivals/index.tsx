@@ -55,19 +55,21 @@ async function NewArrival() {
             <ProductItem 
               key={key}
               item={{
-                id: Number(product.id),
+                id: product.id,
                 name: product.name,
                 price: product.price,
-                discountedPrice: product.price,
-                title: product.name,
-                reviews: 0,
                 slug: product.slug,
+                variants: [],
+                categories: [],
+                for_sale: true,
+                description: product.description || "",
                 featured_image: product.featured_image,
-                images: product.images.map(img => img.url),
-                imgs: {
-                  thumbnails: [product.featured_image],
-                  previews: (product.images || []).map(img => img.url) || [product.featured_image]
-                }
+                images: product.images.map(img => ({
+                  url: img.url,
+                  name: img.name || '',
+                  width: img.width || 0,
+                  height: img.height || 0
+                })),
               }} 
             />
           ))}
