@@ -10,8 +10,8 @@ import PriceDropdown from "./PriceDropdown";
 import shopData from "../Shop/shopData";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
-import { getCollections } from "@/app/lib/fastschema";
-import { Collection } from "@/app/lib/fastschema/types";
+import { getCollections, getProducts, getCollectionProducts } from "@/app/lib/fastschema";
+import { Collection, Product } from "@/app/lib/fastschema/types";
 
 const ShopWithSidebar = () => {
   const [productStyle, setProductStyle] = useState("grid");
@@ -20,6 +20,11 @@ const ShopWithSidebar = () => {
   const [categories, setCategories] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [sortKey, setSortKey] = useState<string>('');
+  const [reverse, setReverse] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
@@ -30,9 +35,11 @@ const ShopWithSidebar = () => {
   };
 
   const options = [
-    { label: "Latest Products", value: "0" },
-    { label: "Best Selling", value: "1" },
-    { label: "Old Products", value: "2" },
+    { label: "Latest Products", value: "id" },
+    { label: "Price: Low to High", value: "price" },
+    { label: "Price: High to Low", value: "price-desc" },
+    { label: "Name: A to Z", value: "name" },
+    { label: "Name: Z to A", value: "name-desc" },
   ];
 
   const genders = [
@@ -95,6 +102,59 @@ const ShopWithSidebar = () => {
     fetchCategories();
   }, []);
 
+  // Handle sort change
+  const handleSortChange = (value: string) => {
+    if (value.endsWith('-desc')) {
+      setSortKey(value.replace('-desc', ''));
+      setReverse(true);
+    } else {
+      setSortKey(value);
+      setReverse(false);
+    }
+  };
+
+  // Fetch products based on filters
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      let fetchedProducts: Product[];
+
+      if (selectedCategory) {
+        // Fetch products by category
+        fetchedProducts = await getCollectionProducts({
+          category: selectedCategory,
+          sortKey,
+          reverse
+        });
+      } else {
+        // Fetch all products with search and sort
+        fetchedProducts = await getProducts({
+          query: searchQuery,
+          sortKey,
+          reverse
+        });
+      }
+
+      setProducts(fetchedProducts);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load products');
+      console.error('Error fetching products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Effect to fetch products when filters change
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedCategory, sortKey, reverse, searchQuery]);
+
+  // Handle category selection
+  const handleCategorySelect = (categorySlug: string) => {
+    setSelectedCategory(categorySlug);
+  };
+
   return (
     <>
       <Breadcrumb
@@ -154,13 +214,28 @@ const ShopWithSidebar = () => {
                     </div>
                   </div>
 
-                  {/* <!-- category box --> */}
+                  {/* Search box */}
+                  <div className="bg-white shadow-1 rounded-lg py-4 px-5">
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full px-4 py-2 border rounded"
+                    />
+                  </div>
+
+                  {/* Categories */}
                   {loading ? (
                     <div>Loading categories...</div>
                   ) : error ? (
                     <div>Error: {error}</div>
                   ) : (
-                    <CategoryDropdown categories={categories} />
+                    <CategoryDropdown 
+                      categories={categories} 
+                      onSelect={handleCategorySelect}
+                      selected={selectedCategory}
+                    />
                   )}
 
                   {/* <!-- gender box --> */}
@@ -185,10 +260,13 @@ const ShopWithSidebar = () => {
                 <div className="flex items-center justify-between">
                   {/* <!-- top bar left --> */}
                   <div className="flex flex-wrap items-center gap-4">
-                    <CustomSelect options={options} />
+                    <CustomSelect 
+                      options={options} 
+                      onChange={(value) => handleSortChange(value)}
+                    />
 
                     <p>
-                      Showing <span className="text-dark">9 of 50</span>{" "}
+                      Showing <span className="text-dark">{products.length}</span>{" "}
                       Products
                     </p>
                   </div>
@@ -275,21 +353,25 @@ const ShopWithSidebar = () => {
               </div>
 
               {/* <!-- Products Grid Tab Content Start --> */}
-              <div
-                className={`${
+              {loading ? (
+                <div className="text-center py-8">Loading products...</div>
+              ) : error ? (
+                <div className="text-center py-8 text-red-500">{error}</div>
+              ) : (
+                <div className={`${
                   productStyle === "grid"
                     ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-7.5 gap-y-9"
                     : "flex flex-col gap-7.5"
-                }`}
-              >
-                {shopData.map((item, key) =>
-                  productStyle === "grid" ? (
-                    <SingleGridItem item={item} key={key} />
-                  ) : (
-                    <SingleListItem item={item} key={key} />
-                  )
-                )}
-              </div>
+                }`}>
+                  {products.map((product, key) =>
+                    productStyle === "grid" ? (
+                      <SingleGridItem item={product} key={product.id} />
+                    ) : (
+                      <SingleListItem item={product} key={product.id} />
+                    )
+                  )}
+                </div>
+              )}
               {/* <!-- Products Grid Tab Content End --> */}
 
               {/* <!-- Products Pagination Start --> */}
