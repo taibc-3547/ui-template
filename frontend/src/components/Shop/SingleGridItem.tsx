@@ -13,6 +13,8 @@ import Image from "next/image";
 const SingleGridItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
 
+  console.log("SingleGridItem item", item);
+
   const dispatch = useDispatch<AppDispatch>();
 
   // update the QuickView state
@@ -40,7 +42,9 @@ const SingleGridItem = ({ item }: { item: Product }) => {
             id: item.id.toString(),
             handle: item.slug,
             title: item.name,
-            featuredImage: item.featured_image
+            featuredImage: {
+              url: item.images[0].url
+            }
           }
         }
       } as CartItem)

@@ -68,9 +68,9 @@ export type Collection = SiteCollection & {
 
 export type Image = {
   url: string;
-  name: string;
-  width: number;
-  height: number;
+  name?: string;
+  width?: number;
+  height?: number;
 };
 
 export type Menu = {

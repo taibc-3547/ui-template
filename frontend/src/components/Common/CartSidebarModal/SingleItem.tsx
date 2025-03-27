@@ -11,7 +11,7 @@ const SingleItem = ({ item, removeItemFromCart }) => {
   };
 
   console.log("item", item);
-
+ 
   return (
     <div className="flex items-center justify-between gap-5">
       <div className="w-full flex items-center gap-6">
@@ -23,7 +23,7 @@ const SingleItem = ({ item, removeItemFromCart }) => {
           <h3 className="font-medium text-dark mb-1 ease-out duration-200 hover:text-blue">
             <a href="#"> {item.title} </a>
           </h3>
-          <p className="text-custom-sm">Price: ${item.discountedPrice}</p>
+          <p className="text-custom-sm">Price: ${item.cost.totalAmount.amount} x {item.quantity}</p>
         </div>
       </div>
 

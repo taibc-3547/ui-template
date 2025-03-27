@@ -40,7 +40,9 @@ const SingleListItem = ({ item }: { item: Product }) => {
             id: item.id.toString(),
             handle: item.slug,
             title: item.name,
-            featuredImage: item.featured_image
+            featuredImage: {
+              url: item.images[0].url
+            }
           }
         }
       } as CartItem)
