@@ -8,7 +8,7 @@ interface ColorsDropdownProps {
 
 const ColorsDropdown = ({ selected, onSelect }: ColorsDropdownProps) => {
   const [toggleDropdown, setToggleDropdown] = useState(true);
-  const colors = ["red", "blue", "orange", "pink", "purple"];
+  const colors = ["red", "blue", "yellow", "black"];
 
   return (
     <div className="bg-white shadow-1 rounded-lg">
@@ -38,7 +38,7 @@ const ColorsDropdown = ({ selected, onSelect }: ColorsDropdownProps) => {
                 style={{ borderColor: color }}
               >
                 <span
-                  className="block w-3 h-3 rounded-full"
+                  className="block w-3 h-3 rounded-full border border-white"
                   style={{ backgroundColor: color }}
                 ></span>
               </div>

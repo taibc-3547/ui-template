@@ -374,14 +374,14 @@ export async function getFilteredProducts({
     }
   }
 
-  // Add size filter - Using the correct $in operator format
+  // Add size filter
   if (sizes && sizes.length > 0) {
     conditions.push({
       size: { $in: sizes.map(s => s.toLowerCase()) }
     });
   }
 
-  // Add color filter - Using the same format for consistency
+  // Add color filter - Using the same $in operator format
   if (colors && colors.length > 0) {
     conditions.push({
       color: { $in: colors.map(c => c.toLowerCase()) }
