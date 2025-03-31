@@ -16,7 +16,11 @@ const GenderItem = ({ category, selected, onSelect }: GenderItemProps) => {
       className={`${
         selected && "text-blue"
       } group flex items-center justify-between ease-out duration-200 hover:text-blue`}
-      onClick={() => onSelect(category.name)}
+      onClick={() => {
+        if (!selected) {
+          onSelect(category.name);
+        }
+      }}
     >
       <div className="flex items-center gap-2">
         <div
@@ -61,6 +65,12 @@ interface GenderDropdownProps {
 
 const GenderDropdown = ({ genders, selected, onSelect }: GenderDropdownProps) => {
   const [toggleDropdown, setToggleDropdown] = useState(true);
+
+  React.useEffect(() => {
+    if (!selected && genders.length > 0) {
+      onSelect(genders[0].name);
+    }
+  }, [selected, genders, onSelect]);
 
   return (
     <div className="bg-white shadow-1 rounded-lg">

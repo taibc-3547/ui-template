@@ -345,7 +345,8 @@ export async function getFilteredProducts({
   page = 1,
   limit = 18,
   query,
-  gender
+  gender,
+  category
 }: {
   priceRange?: { min?: number; max?: number };
   sizes?: string[];
@@ -355,10 +356,18 @@ export async function getFilteredProducts({
   limit?: number;
   query?: string;
   gender?: string;
+  category?: string;
 }): Promise<{ items: Product[]; total: number }> {
   const fastschema = await useFastSchema();
   const filter: Record<string, any> = {};
   const conditions = [];
+
+  // Add category filter
+  if (category) {
+    conditions.push({
+      'categories.slug': category
+    });
+  }
 
   // Add price range filter
   if (priceRange) {
