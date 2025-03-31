@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/store";
 import { useSelector } from "react-redux";
 import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
-import { getCollections } from "@/app/lib/fastschema";
+import { getCategories } from "@/app/lib/fastschema";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,7 +25,7 @@ const Header = () => {
   };
 
   const fetchCollections = async () => {
-    const collections = await getCollections(); // this, in fact, is categories
+    const collections = await getCategories(); // this, in fact, is categories
     return collections;
   };
 

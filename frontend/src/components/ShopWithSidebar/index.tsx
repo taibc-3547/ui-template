@@ -9,14 +9,14 @@ import ColorsDropdwon from "./ColorsDropdwon";
 import PriceDropdown from "./PriceDropdown";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
-import { getCollections, getProducts, getCollectionProducts } from "@/app/lib/fastschema";
-import { Collection, Product } from "@/app/lib/fastschema/types";
+import { getCategories, getProducts, getCollectionProducts } from "@/app/lib/fastschema";
+import { Category, Product } from "@/app/lib/fastschema/types";
 
 const ShopWithSidebar = () => {
   const [productStyle, setProductStyle] = useState("grid");
   const [productSidebar, setProductSidebar] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
-  const [categories, setCategories] = useState<Collection[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -87,7 +87,7 @@ const ShopWithSidebar = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const collections = await getCollections();
+        const collections = await getCategories();
         setCategories(collections.map(cat => ({
           id: cat.id,
           path: cat.slug,

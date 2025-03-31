@@ -1,7 +1,7 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useCallback, useRef, useEffect, useState } from "react";
-import { getCollections } from "@/app/lib/fastschema";
+import { getCategories } from "@/app/lib/fastschema";
 
 // Import Swiper styles
 import "swiper/css/navigation";
@@ -15,7 +15,7 @@ const Categories = () => {
 
   // Add fetch function
   const fetchCategories = async () => {
-    const collections = await getCollections();
+    const collections = await getCategories();
     return collections;
   };
 

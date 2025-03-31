@@ -61,7 +61,7 @@ export type CartItem = {
   };
 };
 
-export type Collection = SiteCollection & {
+export type Category = SiteCategory & {
   id: number;
   path: string;
 };
@@ -97,7 +97,7 @@ export type Page = {
 export type Product = Omit<SiteProduct, 'variants' | 'images'> & {
   variants: ProductVariant[];
   images: Image[];
-  categories: Collection[];
+  categories: Category[];
 };
 
 export type ProductOption = {
@@ -135,7 +135,7 @@ export type SiteCart = {
   totalQuantity: number;
 };
 
-export type SiteCollection = {
+export type SiteCategory = {
   slug: string;
   name: string;
   description: string;
@@ -152,11 +152,10 @@ export type SiteProduct = {
   content?: string;
   options?: ProductOption[];
   price: number;
-  // priceRange: {
-  //   maxVariantPrice: Money;
-  //   minVariantPrice: Money;
-  // };
-  variants?: Connection<ProductVariant>;
+  promoted: boolean;
+  sales_count: number;
+  size: string;
+  color: string;
   featured_image: Image;
   images: Connection<Image>;
   seo?: SEO;

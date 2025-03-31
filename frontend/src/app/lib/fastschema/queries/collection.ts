@@ -15,7 +15,7 @@ const collectionFragment = /* GraphQL */ `
 `;
 
 export const getCollectionQuery = /* GraphQL */ `
-  query getCollection($handle: String!) {
+  query getCategory($handle: String!) {
     collection(handle: $handle) {
       ...collection
     }
@@ -24,7 +24,7 @@ export const getCollectionQuery = /* GraphQL */ `
 `;
 
 export const getCollectionsQuery = /* GraphQL */ `
-  query getCollections {
+  query getCategories {
     collections(first: 100, sortKey: TITLE) {
       edges {
         node {

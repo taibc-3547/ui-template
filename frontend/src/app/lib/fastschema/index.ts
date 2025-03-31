@@ -1,6 +1,6 @@
 import { FastSchema } from 'fastschema';
 export * from 'fastschema';
-import { Cart, Collection, Menu, Order, Product } from './types';
+import { Cart, Category, Menu, Order, Product } from './types';
 import { OrderInfoFormValues } from '@/components/Checkout/data';
 
 export const useFastSchema = async () => {
@@ -91,7 +91,7 @@ export async function getCart(cartId: string | undefined): Promise<Cart | undefi
   return cart;
 }
 
-export async function getCollection(handle: string): Promise<Collection | undefined> {
+export async function getCategory(handle: string): Promise<Category | undefined> {
   const fastschema = await useFastSchema();
   const category = await fastschema.schema('category').get({
     filter: {
@@ -152,7 +152,7 @@ export async function getCollectionProducts({
   };
 }
 
-export async function getCollections(): Promise<Collection[]> {
+export async function getCategories(): Promise<Category[]> {
   const fastschema = await useFastSchema();
   const filter: Record<string, any> = {};
   const categories = await fastschema.schema('category').get({
@@ -293,4 +293,97 @@ export async function getNewArrivals(limit: number = 4): Promise<Product[]> {
   });
 
   return products.items;
+}
+
+export async function getPromotedProducts(limit: number = 5): Promise<Product[]> {
+  const fastschema = await useFastSchema();
+  const products = await fastschema.schema('product').get({
+    select: 'id,name,slug,featured_image,images,price,description,content,promoted,sales_count,size,color',
+    limit,
+    filter: {
+      promoted: true
+    }
+  });
+
+  return products.items;
+}
+
+export async function getBestSellers(limit: number = 8): Promise<Product[]> {
+  const fastschema = await useFastSchema();
+  const products = await fastschema.schema('product').get({
+    select: 'id,name,slug,featured_image,images,price,description,content,promoted,sales_count,size,color',
+    limit,
+    sort: '-sales_count'
+  });
+
+  return products.items;
+}
+
+export async function getFilteredProducts({
+  priceRange,
+  sizes,
+  colors,
+  sort = '-id',
+  page = 1,
+  limit = 18
+}: {
+  priceRange?: { min?: number; max?: number };
+  sizes?: string[];
+  colors?: string[];
+  sort?: string;
+  page?: number;
+  limit?: number;
+}): Promise<{ items: Product[]; total: number }> {
+  const fastschema = await useFastSchema();
+  const filter: Record<string, any> = {};
+  const conditions = [];
+
+  // Add price range filter
+  if (priceRange) {
+    const priceConditions = [];
+    if (priceRange.min !== undefined) {
+      priceConditions.push({ price: { $gte: priceRange.min } });
+    }
+    if (priceRange.max !== undefined) {
+      priceConditions.push({ price: { $lte: priceRange.max } });
+    }
+    if (priceConditions.length > 0) {
+      conditions.push({ $and: priceConditions });
+    }
+  }
+
+  // Add size filter
+  if (sizes && sizes.length > 0) {
+    conditions.push({ size: { $in: sizes } });
+  }
+
+  // Add color filter
+  if (colors && colors.length > 0) {
+    conditions.push({ color: { $in: colors } });
+  }
+
+  // Combine all conditions
+  if (conditions.length > 0) {
+    if (conditions.length === 1) {
+      Object.assign(filter, conditions[0]);
+    } else {
+      filter.$and = conditions;
+    }
+  }
+
+  const offset = (page - 1) * limit;
+
+  const products = await fastschema.schema('product').get({
+    select: 'id,name,slug,featured_image,images,price,description,content,promoted,sales_count,size,color',
+    limit,
+    offset,
+    filter,
+    sort,
+    count: true
+  });
+
+  return {
+    items: products.items,
+    total: products.total
+  };
 }
