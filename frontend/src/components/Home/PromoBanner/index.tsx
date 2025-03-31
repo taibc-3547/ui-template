@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getPromotedProducts } from "@/app/lib/fastschema";
 import Link from "next/link";
+import { useModalContext } from "@/app/context/QuickViewModalContext";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { updateQuickView } from "@/redux/features/quickView-slice";
 
 // Default banner data for fallback
 const defaultBanners = {
@@ -37,6 +41,8 @@ const defaultBanners = {
 
 const PromoBanner = () => {
   const [banners, setBanners] = useState(defaultBanners);
+  const { openModal } = useModalContext();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const fetchPromoBanners = async () => {
@@ -77,6 +83,11 @@ const PromoBanner = () => {
     fetchPromoBanners();
   }, []);
 
+  const handleQuickView = (product) => {
+    dispatch(updateQuickView({ ...product }));
+    openModal();
+  };
+
   return (
     <section className="py-20 overflow-hidden">
       <div className="max-w-[1170px] mx-auto px-4 sm:px-8 xl:px-0">
@@ -86,12 +97,20 @@ const PromoBanner = () => {
             <span className="block text-xl font-medium text-dark mb-3">{banners.main.title}</span>
             <h2 className="text-xl lg:text-3xl xl:text-4xl font-bold text-dark mb-5">{banners.main.subtitle}</h2>
             <p className="text-dark">{banners.main.description}</p>
-            <Link
-              href={banners.main.link}
+            <button
+              onClick={() => handleQuickView({
+                name: banners.main.title,
+                description: banners.main.description,
+                images: [{
+                  url: banners.main.image
+                }],
+                slug: banners.main.link.replace('/products/', ''),
+                price: 0
+              })}
               className="inline-flex mt-7.5 bg-blue text-white text-sm font-medium py-3 px-9 rounded-md hover:bg-blue-dark transition duration-200"
             >
               Buy Now
-            </Link>
+            </button>
           </div>
           <div className="relative w-[200px] h-[200px] flex-shrink-0 overflow-hidden rounded-lg">
             <Image
@@ -130,12 +149,20 @@ const PromoBanner = () => {
                     {banner.description}
                   </p>
                 )}
-                <Link
-                  href={banner.link}
+                <button
+                  onClick={() => handleQuickView({
+                    name: banner.title,
+                    description: banner.description || '',
+                    images: [{
+                      url: banner.image
+                    }],
+                    slug: banner.link.replace('/products/', ''),
+                    price: 0
+                  })}
                   className={`inline-flex mt-${index === 0 ? "9" : "7.5"} ${banner.buttonTheme} text-white text-sm font-medium py-2.5 px-8 rounded-md transition duration-200`}
                 >
                   {index === 0 ? "Grab Now" : "Buy Now"}
-                </Link>
+                </button>
               </div>
             </div>
           ))}
