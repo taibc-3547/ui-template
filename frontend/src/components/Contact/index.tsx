@@ -1,9 +1,123 @@
-import React from "react";
+'use client'
+import React, { useState } from "react";
 import Breadcrumb from "../Common/Breadcrumb";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  phone: string;
+  message: string;
+}
 
 const Contact = () => {
+  const [formData, setFormData] = useState<FormData>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    phone: "",
+    message: ""
+  });
+
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case 'firstName':
+        return value.trim() ? '' : 'First name is required';
+      case 'lastName':
+        return value.trim() ? '' : 'Last name is required';
+      case 'email':
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : 'Please enter a valid email address';
+      case 'phone':
+        return /^\+?[\d\s-]{10,}$/.test(value) ? '' : 'Please enter a valid phone number';
+      default:
+        return '';
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors: Partial<FormData> = {};
+    
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success("Message sent successfully!", {
+        duration: 5000,
+        position: "top-right",
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d )",
+          color: "#fff",
+        },
+        icon: "🚀",
+      });
+      
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        phone: "",
+        message: ""
+      });
+    } catch (error) {
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isFormValid = formData.firstName && formData.lastName;
+
   return (
     <>
+      <Toaster />
       <Breadcrumb title={"Contact"} pages={["contact"]} />
 
       <section className="overflow-hidden py-20 bg-gray-2">
@@ -87,64 +201,76 @@ const Contact = () => {
             </div>
 
             <div className="xl:max-w-[770px] w-full bg-white rounded-xl shadow-1 p-4 sm:p-7.5 xl:p-10">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="flex flex-col lg:flex-row gap-5 sm:gap-8 mb-5">
                   <div className="w-full">
                     <label htmlFor="firstName" className="block mb-2.5">
                       First Name <span className="text-red">*</span>
                     </label>
-
                     <input
                       type="text"
                       name="firstName"
                       id="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="Type your name"
-                      className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      className={`rounded-md border ${errors.firstName ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
                     />
+                    {errors.firstName && <p className="text-red text-sm mt-1">{errors.firstName}</p>}
                   </div>
 
                   <div className="w-full">
                     <label htmlFor="lastName" className="block mb-2.5">
                       Last Name <span className="text-red">*</span>
                     </label>
-
                     <input
                       type="text"
                       name="lastName"
                       id="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="Type your name"
-                      className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      className={`rounded-md border ${errors.lastName ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
                     />
+                    {errors.lastName && <p className="text-red text-sm mt-1">{errors.lastName}</p>}
                   </div>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-5 sm:gap-8 mb-5">
                   <div className="w-full">
-                    <label htmlFor="subject" className="block mb-2.5">
-                      Subject
+                    <label htmlFor="email" className="block mb-2.5">
+                      Email <span className="text-red">*</span>
                     </label>
-
                     <input
-                      type="text"
-                      name="subject"
-                      id="subject"
-                      placeholder="Type your subject"
-                      className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      type="email"
+                      name="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder="Enter your email"
+                      className={`rounded-md border ${errors.email ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
                     />
+                    {errors.email && <p className="text-red text-sm mt-1">{errors.email}</p>}
                   </div>
 
                   <div className="w-full">
                     <label htmlFor="phone" className="block mb-2.5">
                       Phone
                     </label>
-
                     <input
                       type="text"
                       name="phone"
                       id="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                       placeholder="Enter your phone"
-                      className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      className={`rounded-md border ${errors.phone ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
                     />
+                    {errors.phone && <p className="text-red text-sm mt-1">{errors.phone}</p>}
                   </div>
                 </div>
 
@@ -152,21 +278,52 @@ const Contact = () => {
                   <label htmlFor="message" className="block mb-2.5">
                     Message
                   </label>
-
                   <textarea
                     name="message"
                     id="message"
                     rows={5}
+                    value={formData.message}
+                    onChange={handleChange}
                     placeholder="Type your message"
-                    className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full p-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                    className={`rounded-md border ${errors.message ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full p-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
                   ></textarea>
+                  {errors.message && <p className="text-red text-sm mt-1">{errors.message}</p>}
                 </div>
 
                 <button
                   type="submit"
-                  className="inline-flex font-medium text-white bg-blue py-3 px-7 rounded-md ease-out duration-200 hover:bg-blue-dark"
+                  disabled={!isFormValid || isLoading}
+                  className={`inline-flex items-center font-medium text-white ${
+                    isFormValid && !isLoading ? 'bg-blue hover:bg-blue-dark' : 'bg-blue-light cursor-not-allowed'
+                  } py-3 px-7 rounded-md ease-out duration-200`}
                 >
-                  Send Message
+                  {isLoading ? (
+                    <>
+                      <svg 
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        fill="none" 
+                        viewBox="0 0 24 24"
+                      >
+                        <circle 
+                          className="opacity-25" 
+                          cx="12" 
+                          cy="12" 
+                          r="10" 
+                          stroke="currentColor" 
+                          strokeWidth="4"
+                        />
+                        <path 
+                          className="opacity-75" 
+                          fill="currentColor" 
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Message'
+                  )}
                 </button>
               </form>
             </div>
