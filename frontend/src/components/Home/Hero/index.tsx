@@ -46,7 +46,7 @@ const Hero = () => {
         const products = await getPromotedProducts(2);
         const promoProducts = products.map(product => ({
           title: product.name,
-          description: "limited time offer",
+          description: `${product.description}`,
           currentPrice: `$${product.price}`,
           originalPrice: `$${Math.round(product.price * 1.5)}`,
           image: {
@@ -91,13 +91,13 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row xl:flex-col gap-5">
               {promos.map((item, index) => (
                 <div key={index} className="w-full relative rounded-[10px] bg-white p-4 sm:p-7.5">
-                  <div className="flex items-center gap-14">
-                    <div>
-                      <h2 className="max-w-[153px] font-semibold text-dark text-xl mb-20">
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col justify-start gap-10">
+                      <h2 className="font-semibold text-dark text-xl">
                         <Link href={item.link}>{item.title}</Link>
                       </h2>
 
-                      <div>
+                      <div className="flex flex-col justify-start">
                         <p className="font-medium text-dark-4 text-custom-sm mb-1.5">
                           {item.description}
                         </p>
@@ -112,7 +112,7 @@ const Hero = () => {
                       </div>
                     </div>
 
-                    <div>
+                    <div className="flex-shrink-0">
                       <Image
                         src={item.image.src}
                         alt={item.image.alt}
