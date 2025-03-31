@@ -141,6 +141,9 @@ export type SiteCategory = {
   description: string;
   seo?: SEO;
   updatedAt: string;
+  image?: {
+    url: string;
+  };
 };
 
 export type SiteProduct = {

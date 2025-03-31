@@ -96,10 +96,26 @@ export async function getCategory(handle: string): Promise<Category | undefined>
   const category = await fastschema.schema('category').get({
     filter: {
       slug: handle
-    }
+    },
+    select: 'id,name,slug,description,image'
   });
 
-  return category?.items?.[0] ?? undefined;
+  if (!category?.items?.[0]) return undefined;
+  
+  const cat = category.items[0];
+  return {
+    id: cat.id as number,
+    slug: cat.slug,
+    name: cat.name,
+    description: cat.description ?? '',
+    seo: {
+      title: cat.name,
+      description: cat.description ?? ''
+    },
+    path: '/search/' + cat.slug,
+    updatedAt: cat.updated_at ?? new Date().toISOString(),
+    image: cat.image ? { url: cat.image.url } : undefined
+  };
 }
 
 export async function getCollectionProducts({
@@ -157,7 +173,8 @@ export async function getCategories(): Promise<Category[]> {
   const filter: Record<string, any> = {};
   const categories = await fastschema.schema('category').get({
     limit: 100,
-    filter
+    filter,
+    select: 'id,name,slug,description,image'
   });
 
   return [
@@ -184,7 +201,8 @@ export async function getCategories(): Promise<Category[]> {
           description: cat.description ?? ''
         },
         path: '/search/' + cat.slug,
-        updatedAt: cat.updated_at ?? new Date().toISOString()
+        updatedAt: cat.updated_at ?? new Date().toISOString(),
+        image: cat.image ? { url: cat.image.url } : undefined
       };
     })
   ];
