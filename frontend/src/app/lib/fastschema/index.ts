@@ -343,7 +343,8 @@ export async function getFilteredProducts({
   colors,
   sort = '-id',
   page = 1,
-  limit = 18
+  limit = 18,
+  query
 }: {
   priceRange?: { min?: number; max?: number };
   sizes?: string[];
@@ -351,10 +352,20 @@ export async function getFilteredProducts({
   sort?: string;
   page?: number;
   limit?: number;
+  query?: string;
 }): Promise<{ items: Product[]; total: number }> {
   const fastschema = await useFastSchema();
   const filter: Record<string, any> = {};
   const conditions = [];
+
+  // Add search query filter
+  if (query) {
+    conditions.push({
+      name: {
+        $like: `%${query}%`
+      }
+    });
+  }
 
   // Add price range filter
   if (priceRange) {

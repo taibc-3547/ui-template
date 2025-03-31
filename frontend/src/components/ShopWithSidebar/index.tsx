@@ -138,7 +138,8 @@ const ShopWithSidebar = () => {
         colors: selectedColors,
         sort: sortKey,
         page: currentPage,
-        limit: pageSize
+        limit: pageSize,
+        query: searchQuery
       });
 
       setProducts(response.items);
@@ -150,7 +151,7 @@ const ShopWithSidebar = () => {
     } finally {
       setLoading(false);
     }
-  }, [priceRange, selectedSizes, selectedColors, sortKey, currentPage, pageSize]);
+  }, [priceRange, selectedSizes, selectedColors, sortKey, currentPage, pageSize, searchQuery]);
 
   // Effect to fetch products when filters or pagination changes
   useEffect(() => {
