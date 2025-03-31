@@ -29,6 +29,7 @@ const QuickViewModal = () => {
   // Fetch product data when modal opens
   useEffect(() => {
     const fetchProduct = async () => {
+      console.log("quickViewProduct", quickViewProduct)
       if (isModalOpen && quickViewProduct?.slug) {
         setLoading(true);
         try {

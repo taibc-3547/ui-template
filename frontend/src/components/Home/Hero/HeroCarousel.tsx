@@ -4,6 +4,10 @@ import { Autoplay, Pagination } from "swiper/modules";
 import { getPromotedProducts } from "@/app/lib/fastschema";
 import { Product } from "@/app/lib/fastschema/types";
 import { useEffect, useState } from "react";
+import { useModalContext } from "@/app/context/QuickViewModalContext";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { updateQuickView } from "@/redux/features/quickView-slice";
 
 // Import Swiper styles
 import "swiper/css/pagination";
@@ -24,7 +28,7 @@ const heroSlides = [
       width: 351,
       height: 358
     },
-    link: "/shop-with-sidebar"
+    slug: "winter-collection-fashion-style",
   },
   {
     discount: "30%",
@@ -36,12 +40,14 @@ const heroSlides = [
       width: 351,
       height: 358
     },
-    link: "/shop-with-sidebar"
+    slug: "new-arrivals-spring-collection",
   }
 ];
 
 const HeroCarousal = () => {
   const [slides, setSlides] = useState(heroSlides);
+  const { openModal } = useModalContext();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const fetchPromotedProducts = async () => {
@@ -58,7 +64,10 @@ const HeroCarousal = () => {
             width: 351,
             height: 358
           },
-          link: `/products/${product.slug}`
+          link: `/products/${product.slug}`,
+          id: product.id,
+          price: product.price,
+          slug: product.slug,
         }));
         
         setSlides(productSlides.length > 0 ? productSlides : heroSlides);
@@ -71,6 +80,11 @@ const HeroCarousal = () => {
 
     fetchPromotedProducts();
   }, []);
+
+  const handleQuickView = (product) => {
+    dispatch(updateQuickView({ ...product }));
+    openModal();
+  };
 
   return (
     <Swiper
@@ -107,12 +121,23 @@ const HeroCarousal = () => {
 
               <p>{slide.description}</p>
 
-              <Link
-                href={slide.link}
+              <button
+                onClick={() => {
+                  console.log("slide", slide)
+                  handleQuickView({
+                    name: slide.title,
+                    description: slide.description,
+                    price: 0, // You'll need to add price to your slides data
+                    images: [{
+                      url: slide.image.src
+                    }],
+                    slug: slide.slug,
+                  })
+                }}
                 className="inline-flex font-medium text-white text-custom-sm rounded-md bg-dark py-3 px-9 ease-out duration-200 hover:bg-blue mt-10"
               >
                 Shop Now
-              </Link>
+              </button>
             </div>
 
             <div className="py-10 flex-shrink-0">
