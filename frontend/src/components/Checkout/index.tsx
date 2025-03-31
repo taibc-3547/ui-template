@@ -7,8 +7,12 @@ import ShippingMethod from "./ShippingMethod";
 import PaymentMethod from "./PaymentMethod";
 import Coupon from "./Coupon";
 import Billing from "./Billing";
+import { useAppSelector } from "@/redux/store";
+import SingleItem from "./SingleItem";
 
 const Checkout = () => {
+  const cartItems = useAppSelector((state) => state.cartReducer.items);
+
   return (
     <>
       <Breadcrumb title={"Checkout"} pages={["checkout"]} />
@@ -46,59 +50,35 @@ const Checkout = () => {
               </div>
 
               {/* // <!-- checkout right --> */}
-              <div className="max-w-[455px] w-full">
+              <div className="w-fit">
                 {/* <!-- order list box --> */}
-                <div className="bg-white shadow-1 rounded-[10px]">
+                <div className="bg-white shadow-1 rounded-[10px] w-full">
                   <div className="border-b border-gray-3 py-5 px-4 sm:px-8.5">
-                    <h3 className="font-medium text-xl text-dark">
+                    <h3 className="font-medium text-xl text-dark truncate">
                       Your Order
                     </h3>
                   </div>
 
                   <div className="pt-2.5 pb-8.5 px-4 sm:px-8.5">
                     {/* <!-- title --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <h4 className="font-medium text-dark">Product</h4>
+                    <div className="flex items-center justify-between py-5 border-b border-gray-3 gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-dark truncate">Product</h4>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-dark text-right">
+                      <div className="flex-shrink-0 whitespace-nowrap">
+                        <h4 className="font-medium text-dark">
                           Subtotal
                         </h4>
                       </div>
                     </div>
 
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">iPhone 14 Plus , 6/128GB</p>
-                      </div>
-                      <div>
-                        <p className="text-dark text-right">$899.00</p>
-                      </div>
-                    </div>
+                    {/* <!-- product items --> */}
+                    {cartItems.length > 0 &&
+                      cartItems.map((item, key) => (
+                        <SingleItem item={item} key={key} />
+                      ))}
 
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">Asus RT Dual Band Router</p>
-                      </div>
-                      <div>
-                        <p className="text-dark text-right">$129.00</p>
-                      </div>
-                    </div>
-
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">Havit HV-G69 USB Gamepad</p>
-                      </div>
-                      <div>
-                        <p className="text-dark text-right">$29.00</p>
-                      </div>
-                    </div>
-
-                    {/* <!-- product item --> */}
+                    {/* <!-- shipping fee --> */}
                     <div className="flex items-center justify-between py-5 border-b border-gray-3">
                       <div>
                         <p className="text-dark">Shipping Fee</p>
@@ -115,7 +95,7 @@ const Checkout = () => {
                       </div>
                       <div>
                         <p className="font-medium text-lg text-dark text-right">
-                          $1072.00
+                          ${(cartItems.reduce((total, item) => total + Number(item.cost.totalAmount.amount), 0) + 15).toFixed(2)}
                         </p>
                       </div>
                     </div>

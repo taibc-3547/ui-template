@@ -42,12 +42,12 @@ async function NewArrival() {
             </h2>
           </div>
 
-          <Link
+          {/* <Link
             href="/shop-with-sidebar"
             className="inline-flex font-medium text-custom-sm py-2.5 px-7 rounded-md border-gray-3 border bg-gray-1 text-dark ease-out duration-200 hover:bg-dark hover:text-white hover:border-transparent"
           >
             View All
-          </Link>
+          </Link> */}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-7.5 gap-y-9">
