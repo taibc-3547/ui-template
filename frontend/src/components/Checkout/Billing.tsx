@@ -161,7 +161,7 @@ const Billing = () => {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label
             htmlFor="checkboxLabelTwo"
             className="text-dark flex cursor-pointer select-none items-center"
@@ -201,7 +201,7 @@ const Billing = () => {
             </div>
             Create an Account
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );
