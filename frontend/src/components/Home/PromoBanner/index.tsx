@@ -4,14 +4,14 @@ import Image from "next/image";
 import { getPromotedProducts } from "@/app/lib/fastschema";
 import Link from "next/link";
 
-// Fallback banner data in case API fails
+// Default banner data for fallback
 const defaultBanners = {
   main: {
     title: "Apple iPhone 14 Plus",
     subtitle: "UP TO 30% OFF",
-    description: "iPhone 14 has the same superspeedy chip that's in iPhone 13 Pro, A15 Bionic, with a 5‑core GPU, powers all the latest features.",
+    description: "iPhone 14 features the A15 Bionic chip with a 5-core GPU for top performance.",
     image: "/images/promo/promo-01.png",
-    link: "#"
+    link: "#",
   },
   secondary: [
     {
@@ -21,18 +21,18 @@ const defaultBanners = {
       image: "/images/promo/promo-02.png",
       link: "#",
       theme: "bg-[#DBF4F3]",
-      buttonTheme: "bg-teal hover:bg-teal-dark"
+      buttonTheme: "bg-teal hover:bg-teal-dark",
     },
     {
       title: "Apple Watch Ultra",
       subtitle: "Up to 40% off",
-      description: "The aerospace-grade titanium case strikes the perfect balance of everything.",
+      description: "Aerospace-grade titanium offers durability and style in perfect harmony.",
       image: "/images/promo/promo-03.png",
       link: "#",
       theme: "bg-[#FFECE1]",
-      buttonTheme: "bg-orange hover:bg-orange-dark"
-    }
-  ]
+      buttonTheme: "bg-orange hover:bg-orange-dark",
+    },
+  ],
 };
 
 const PromoBanner = () => {
@@ -41,8 +41,7 @@ const PromoBanner = () => {
   useEffect(() => {
     const fetchPromoBanners = async () => {
       try {
-        const products = await getPromotedProducts(3); // Get top 3 promoted products
-        
+        const products = await getPromotedProducts(3); // Fetch 3 promoted products
         if (products.length > 0) {
           const mainProduct = products[0];
           const secondaryProducts = products.slice(1, 3);
@@ -50,28 +49,28 @@ const PromoBanner = () => {
           const newBanners = {
             main: {
               title: mainProduct.name,
-              subtitle: '',
+              subtitle: "",
               description: mainProduct.description,
               image: mainProduct.featured_image.url,
-              link: `/products/${mainProduct.slug}`
+              link: `/products/${mainProduct.slug}`,
             },
             secondary: secondaryProducts.map((product, index) => ({
               title: product.name,
-              subtitle: '',
-              discount: '',
+              subtitle: "",
+              discount: "",
               description: product.description,
               image: product.featured_image.url,
               link: `/products/${product.slug}`,
               theme: index === 0 ? "bg-[#DBF4F3]" : "bg-[#FFECE1]",
-              buttonTheme: index === 0 ? "bg-teal hover:bg-teal-dark" : "bg-orange hover:bg-orange-dark"
-            }))
+              buttonTheme: index === 0 ? "bg-teal hover:bg-teal-dark" : "bg-orange hover:bg-orange-dark",
+            })),
           };
 
           setBanners(newBanners as typeof defaultBanners);
         }
       } catch (error) {
-        console.error('Error fetching promo banners:', error);
-        // Fallback to default banners is automatic since we initialized with them
+        console.error("Error fetching promo banners:", error);
+        // Fallback to defaultBanners (already set)
       }
     };
 
@@ -79,77 +78,63 @@ const PromoBanner = () => {
   }, []);
 
   return (
-    <section className="overflow-hidden py-20">
-      <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
-        {/* Main banner */}
-        <div className="relative z-1 overflow-hidden rounded-lg bg-[#F5F5F7] py-12.5 lg:py-17.5 xl:py-22.5 px-4 sm:px-7.5 lg:px-14 xl:px-19 mb-7.5">
-          <div className="max-w-[550px] w-full">
-            <span className="block font-medium text-xl text-dark mb-3">
-              {banners.main.title}
-            </span>
-
-            <h2 className="font-bold text-xl lg:text-heading-4 xl:text-heading-3 text-dark mb-5">
-              {banners.main.subtitle}
-            </h2>
-
-            <p>{banners.main.description}</p>
-
+    <section className="py-20 overflow-hidden">
+      <div className="max-w-[1170px] mx-auto px-4 sm:px-8 xl:px-0">
+        {/* Main Banner */}
+        <div className="relative rounded-lg bg-[#F5F5F7] py-12 px-4 sm:px-8 lg:px-14 xl:px-19 mb-7.5 overflow-hidden flex justify-between items-center">
+          <div className="max-w-[550px] relative z-10">
+            <span className="block text-xl font-medium text-dark mb-3">{banners.main.title}</span>
+            <h2 className="text-xl lg:text-3xl xl:text-4xl font-bold text-dark mb-5">{banners.main.subtitle}</h2>
+            <p className="text-dark">{banners.main.description}</p>
             <Link
               href={banners.main.link}
-              className="inline-flex font-medium text-custom-sm text-white bg-blue py-[11px] px-9.5 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
+              className="inline-flex mt-7.5 bg-blue text-white text-sm font-medium py-3 px-9 rounded-md hover:bg-blue-dark transition duration-200"
             >
               Buy Now
             </Link>
           </div>
-
-          <Image
-            src={banners.main.image}
-            alt={banners.main.title}
-            className="absolute bottom-0 right-4 lg:right-26 -z-1"
-            width={274}
-            height={350}
-          />
+          <div className="relative w-[200px] h-[200px] flex-shrink-0 overflow-hidden rounded-lg">
+            <Image
+              src={banners.main.image}
+              alt={banners.main.title}
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
 
-        <div className="grid gap-7.5 grid-cols-1 lg:grid-cols-2">
+        {/* Secondary Banners */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-7.5">
           {banners.secondary.map((banner, index) => (
-            <div key={index} className={`relative z-1 overflow-hidden rounded-lg ${banner.theme} py-10 xl:py-16 px-4 sm:px-7.5 xl:px-10`}>
-              <Image
-                src={banner.image}
-                alt={banner.title}
-                className={`absolute top-1/2 -translate-y-1/2 ${index === 0 ? 'left-3 sm:left-10' : 'right-3 sm:right-8.5'} -z-1`}
-                width={index === 0 ? 241 : 200}
-                height={index === 0 ? 241 : 200}
-              />
-
-              <div className={index === 0 ? 'text-right' : ''}>
-                <span className="block text-lg text-dark mb-1.5">
-                  {banner.title}
-                </span>
-
-                <h2 className="font-bold text-xl lg:text-heading-4 text-dark mb-2.5">
-                  {banner.subtitle}
-                </h2>
-
+            <div
+              key={index}
+              className={`relative rounded-lg ${banner.theme} py-10 px-4 sm:px-8 xl:px-10 overflow-hidden`}
+            >
+              <div className={`absolute top-1/2 -translate-y-1/2 ${index === 0 ? "left-3 sm:left-10" : "right-3 sm:right-8"} w-[200px] h-[200px] rounded-lg overflow-hidden`}>
+                <Image
+                  src={banner.image}
+                  alt={banner.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className={`relative z-10 ${index === 0 ? "text-right" : ""}`}>
+                <span className="block text-lg text-dark mb-1.5">{banner.title}</span>
+                <h2 className="text-xl lg:text-3xl font-bold text-dark mb-2.5">{banner.subtitle}</h2>
                 {banner.discount && (
-                  <p className="font-semibold text-custom-1 text-teal">
-                    {banner.discount}
+                  <p className="text-teal text-base font-semibold">{banner.discount}</p>
+                )}
+                {banner.description && (
+                  <p className={`text-sm text-dark max-w-[220px] ${index === 0 ? "ml-auto" : ""}`}>
+                    {banner.description}
                   </p>
                 )}
-
-                {banner.description && (
-                  <div className={`${index === 0 ? 'ml-auto' : ''} max-w-[220px]`}>
-                    <span className="inline-block text-custom-sm break-words whitespace-normal">
-                      {banner.description}
-                    </span>
-                  </div>
-                )}
-
                 <Link
                   href={banner.link}
-                  className={`inline-flex font-medium text-custom-sm text-white ${banner.buttonTheme} py-2.5 px-8.5 rounded-md ease-out duration-200 mt-${index === 0 ? '9' : '7.5'}`}
+                  className={`inline-flex mt-${index === 0 ? "9" : "7.5"} ${banner.buttonTheme} text-white text-sm font-medium py-2.5 px-8 rounded-md transition duration-200`}
                 >
-                  {index === 0 ? 'Grab Now' : 'Buy Now'}
+                  {index === 0 ? "Grab Now" : "Buy Now"}
                 </Link>
               </div>
             </div>

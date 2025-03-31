@@ -115,13 +115,15 @@ const HeroCarousal = () => {
               </Link>
             </div>
 
-            <div className="h-full py-10">
-              <Image
-                src={slide.image.src}
-                alt={slide.image.alt}
-                width={slide.image.width}
-                height={slide.image.height}
-              />
+            <div className="py-10 flex-shrink-0">
+              <div className="relative w-[351px] h-[358px] rounded-lg overflow-hidden">
+                <Image
+                  src={slide.image.src}
+                  alt={slide.image.alt}
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </SwiperSlide>

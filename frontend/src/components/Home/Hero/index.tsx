@@ -112,12 +112,12 @@ const Hero = () => {
                       </div>
                     </div>
 
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 relative w-[123px] h-[161px] rounded-lg overflow-hidden">
                       <Image
                         src={item.image.src}
                         alt={item.image.alt}
-                        width={item.image.width}
-                        height={item.image.height}
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   </div>

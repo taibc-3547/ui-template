@@ -75,30 +75,35 @@ const SingleItem = ({ item }: { item: Product }) => {
                 alt="star icon"
                 width={14}
                 height={14}
+                className="w-[14px]"
               />
               <Image
                 src="/images/icons/icon-star.svg"
                 alt="star icon"
                 width={14}
                 height={14}
+                className="w-[14px]"
               />
               <Image
                 src="/images/icons/icon-star.svg"
                 alt="star icon"
                 width={14}
                 height={14}
+                className="w-[14px]"
               />
               <Image
                 src="/images/icons/icon-star.svg"
                 alt="star icon"
                 width={14}
                 height={14}
+                className="w-[14px]"
               />
               <Image
                 src="/images/icons/icon-star.svg"
                 alt="star icon"
                 width={14}
                 height={14}
+                className="w-[14px]"
               />
             </div>
 
@@ -115,9 +120,16 @@ const SingleItem = ({ item }: { item: Product }) => {
           </span>
         </div>
 
-        {/* <div className="flex justify-center items-center">
-          <Image src={item.images[0].url} alt="" width={280} height={280} />
-        </div> */}
+        <div className="flex justify-center items-center h-[280px]">
+          <div className="relative w-[280px] h-[280px] rounded-lg overflow-hidden">
+            <Image 
+              src={item.featured_image.url} 
+              alt={item.name} 
+              fill
+              priority
+            />
+          </div>
+        </div>
 
         <div className="absolute right-0 bottom-0 translate-x-full u-w-full flex flex-col gap-2 p-5.5 ease-linear duration-300 group-hover:translate-x-0">
           <button
