@@ -86,7 +86,7 @@ const Contact = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast.success("Message sent successfully!", {
         duration: 5000,
