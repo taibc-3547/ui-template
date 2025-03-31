@@ -123,7 +123,7 @@ const HeroCarousal = () => {
 
               <button
                 onClick={() => {
-                  console.log("slide", slide)
+                  //console.log("slide", slide)
                   handleQuickView({
                     name: slide.title,
                     description: slide.description,

@@ -12,6 +12,8 @@ import { Product } from "@/app/lib/fastschema/types";
 
 const SingleItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
+
+  console.log("item", item)
   const dispatch = useDispatch<AppDispatch>();
 
   // update the QuickView state
@@ -40,7 +42,7 @@ const SingleItem = ({ item }: { item: Product }) => {
             handle: "",
             title: "",
             featuredImage: {
-              url: "",
+              url: item.featured_image.url,
               name: "",
               width: 0,
               height: 0

@@ -23,7 +23,7 @@ const SingleItem = ({ item }) => {
       try {
         setIsCheckingPrice(true);
         const currentProduct = await getProduct(item.merchandise.product.slug);
-        
+
         if (!currentProduct) {
           // Product no longer exists, remove from cart
           dispatch(removeItemFromCart(item.id));
@@ -84,7 +84,14 @@ const SingleItem = ({ item }) => {
         <div className="flex items-center justify-between gap-5">
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] bg-gray-2 max-w-[80px] w-full h-17.5">
-              <Image width={200} height={200} src={item.merchandise.product.featuredImage.url} alt="product" />
+              <div className="relative w-full h-full">
+                <Image
+                  src={item.merchandise.product.featuredImage.url}
+                  alt="product"
+                  fill
+                  className="object-cover rounded-[10px]"
+                />
+              </div>
             </div>
 
             <div>

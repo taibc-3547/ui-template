@@ -16,14 +16,14 @@ const SingleItem = ({ item, removeItemFromCart, isCartModalOpen }) => {
   // console.log("cart sidebar modal item", item);
 
   useEffect(() => {
-    console.log("cart sidebar modal use effect");
+    //console.log("cart sidebar modal use effect");
     const checkProductStatus = async () => {
       try {
-        console.log("checking product status");
+        //console.log("checking product status");
         setIsCheckingPrice(true);
         const currentProduct = await getProduct(item.merchandise.product.slug);
-        console.log("currentProduct", currentProduct);
-        
+        //console.log("currentProduct", currentProduct);
+
         if (!currentProduct) {
           // Product no longer exists, remove from cart 
           dispatch(removeItemFromCart(item.id));
@@ -57,12 +57,27 @@ const SingleItem = ({ item, removeItemFromCart, isCartModalOpen }) => {
 
     checkProductStatus();
   }, [item.id, item.merchandise.product.slug, dispatch, isCartModalOpen]);
- 
+
   return (
     <div className="flex items-center justify-between gap-5">
       <div className="w-full flex items-center gap-6">
         <div className="flex items-center justify-center rounded-[10px] bg-gray-3 max-w-[90px] w-full h-22.5">
-          <Image src={item.merchandise.product.featuredImage.url} alt="product" width={100} height={100} />
+          {
+            item.merchandise.product.featuredImage.url ? (
+              <div className="relative w-full h-full">
+                <Image
+                  src={item.merchandise.product.featuredImage.url}
+                  alt="product"
+                  fill
+                  className="object-cover rounded-[10px]"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-full bg-gray-3">
+                <p>No image</p>
+              </div>
+            )
+          }
         </div>
 
         <div>
