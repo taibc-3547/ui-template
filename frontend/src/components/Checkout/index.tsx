@@ -122,8 +122,8 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                {/* <!-- coupon box --> */}
-                <Coupon />
+                {/* <!-- coupon box -->
+                <Coupon /> */}
 
                 {/* <!-- shipping box --> */}
                 <ShippingMethod />
