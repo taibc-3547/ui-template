@@ -1,9 +1,13 @@
+'use client'
 import React from "react";
 import HeroCarousel from "./HeroCarousel";
 import HeroFeature from "./HeroFeature";
 import Image from "next/image";
 import Link from "next/link";
+import { getPromotedProducts } from "@/app/lib/fastschema";
+import { useEffect, useState } from "react";
 
+// Keep original promoItems as fallback
 const promoItems = [
   {
     title: "Spring Collection 2024",
@@ -34,6 +38,36 @@ const promoItems = [
 ];
 
 const Hero = () => {
+  const [promos, setPromos] = useState(promoItems);
+
+  useEffect(() => {
+    const fetchPromos = async () => {
+      try {
+        const products = await getPromotedProducts(2);
+        const promoProducts = products.map(product => ({
+          title: product.name,
+          description: "limited time offer",
+          currentPrice: `$${product.price}`,
+          originalPrice: `$${Math.round(product.price * 1.5)}`,
+          image: {
+            src: product.featured_image.url,
+            alt: product.name,
+            width: 123,
+            height: 161
+          },
+          link: `/products/${product.slug}`
+        }));
+        
+        setPromos(promoProducts.length > 0 ? promoProducts : promoItems);
+      } catch (error) {
+        console.error('Error fetching promo products:', error);
+        setPromos(promoItems);
+      }
+    };
+
+    fetchPromos();
+  }, []);
+
   return (
     <section className="overflow-hidden pb-10 lg:pb-12.5 xl:pb-15 pt-57.5 sm:pt-45 lg:pt-30 xl:pt-51.5 bg-[#E5EAF4]">
       <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
@@ -55,7 +89,7 @@ const Hero = () => {
 
           <div className="xl:max-w-[393px] w-full">
             <div className="flex flex-col sm:flex-row xl:flex-col gap-5">
-              {promoItems.map((item, index) => (
+              {promos.map((item, index) => (
                 <div key={index} className="w-full relative rounded-[10px] bg-white p-4 sm:p-7.5">
                   <div className="flex items-center gap-14">
                     <div>
