@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/Common/Breadcrumb";
 import Link from "next/link";
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { loginAction } from "@/app/lib/fastschema/actions";
 import { User } from "fastschema";
 
@@ -73,6 +73,7 @@ const Signin = ({ user }: { user: User | null }) => {
   return (
     <>
       <Breadcrumb title={"Signin"} pages={["Signin"]} />
+      <Toaster />
       <section className="overflow-hidden py-20 bg-gray-2">
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
           <div className="max-w-[570px] w-full mx-auto rounded-xl bg-white shadow-1 p-4 sm:p-7.5 xl:p-11">
