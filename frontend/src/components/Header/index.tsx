@@ -9,13 +9,16 @@ import { useSelector } from "react-redux";
 import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import { getCategories } from "@/app/lib/fastschema";
-
+import { usePathname, useRouter } from "next/navigation";
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [options, setOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const { openCartModal } = useCartModalContext();
+  const currentPath = usePathname();
+  const router = useRouter();
 
   const product = useAppSelector((state) => state.cartReducer.items);
   const totalPrice = useSelector(selectTotalPrice);
@@ -27,6 +30,10 @@ const Header = () => {
   const fetchCollections = async () => {
     const collections = await getCategories(); // this, in fact, is categories
     return collections;
+  };
+
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
   };
 
   // Sticky menu
@@ -55,6 +62,19 @@ const Header = () => {
     fetchOptions();
   }, []);
 
+
+  useEffect(() => {
+    if (currentPath === "/shop-with-sidebar" && selectedOption !== null && selectedOption.header !== "All") {
+      // Get current URL search params
+      const searchParams = new URLSearchParams(window.location.search);
+      // Update category param while preserving others
+      searchParams.set('category', selectedOption.header);
+      router.push(`/shop-with-sidebar?${searchParams.toString()}`);
+    } else if (currentPath !== "/shop-with-sidebar" && selectedOption !== null && selectedOption.header !== "All") {
+      router.push(`/shop-with-sidebar?category=${selectedOption.header}`);
+    }
+  }, [selectedOption, options, currentPath, searchQuery]);
+
   return (
     <header
       className={`fixed left-0 top-0 w-full z-9999 bg-white transition-all ease-in-out duration-300 ${
@@ -79,7 +99,7 @@ const Header = () => {
             <div className="max-w-[475px] w-full">
               <form>
                 <div className="flex items-center">
-                  <CustomSelect options={options} />
+                  <CustomSelect options={options} onSelect={handleOptionSelect} />
 
                   <div className="relative max-w-[333px] sm:min-w-[333px] w-full">
                     {/* <!-- divider --> */}
@@ -99,6 +119,11 @@ const Header = () => {
                       id="search-btn"
                       aria-label="Search"
                       className="flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 ease-in duration-200 hover:text-blue"
+                      onClick={() => {
+                        if (searchQuery.trim() !== "") {
+                          router.push(`/shop-with-sidebar?search=${searchQuery}`);
+                        }
+                      }}
                     >
                       <svg
                         className="fill-current"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const CustomSelect = ({ options }) => {
+const CustomSelect = ({ options, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(
     options?.[0] || { label: "All" }
@@ -12,6 +12,7 @@ const CustomSelect = ({ options }) => {
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+    onSelect?.(option);
     toggleDropdown();
   };
 
