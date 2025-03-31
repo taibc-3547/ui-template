@@ -1,11 +1,14 @@
+'use client'
 import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useAppSelector } from "@/redux/store";
 import React from "react";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 const OrderSummary = () => {
   const cartItems = useAppSelector((state) => state.cartReducer.items);
   const totalPrice = useSelector(selectTotalPrice);
+  const router = useRouter();
 
   return (
     <div className="lg:max-w-[455px] w-full">
@@ -56,6 +59,9 @@ const OrderSummary = () => {
           <button
             type="submit"
             className="w-full flex justify-center font-medium text-white bg-blue py-3 px-6 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
+            onClick={() => {
+              router.push("/checkout");
+            }}
           >
             Process to Checkout
           </button>
