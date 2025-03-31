@@ -1,12 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { getPromotedProducts } from "@/app/lib/fastschema";
+import type { Product } from "@/app/lib/fastschema/types";
 
 const CounDown = () => {
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [promoProduct, setPromoProduct] = useState<Product | null>(null);
 
   const deadline = "December, 31, 2024";
 
@@ -20,8 +23,22 @@ const CounDown = () => {
   };
 
   useEffect(() => {
+    // Fetch promoted product
+    const fetchPromoProduct = async () => {
+      try {
+        const products = await getPromotedProducts(1); // Get just one promoted product
+        if (products.length > 0) {
+          setPromoProduct(products[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching promo product:', error);
+      }
+    };
+
+    fetchPromoProduct();
+    
     // @ts-ignore
-    const interval = setInterval(() => getTime(deadline), 1000);
+    const interval = setInterval(() => getTime(), 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -32,14 +49,16 @@ const CounDown = () => {
         <div className="relative overflow-hidden z-1 rounded-lg bg-[#D0E9F3] p-4 sm:p-7.5 lg:p-10 xl:p-15">
           <div className="max-w-[422px] w-full">
             <span className="block font-medium text-custom-1 text-blue mb-2.5">
-              Don’t Miss!!
+              Don't Miss!!
             </span>
 
             <h2 className="font-bold text-dark text-xl lg:text-heading-4 xl:text-heading-3 mb-3">
-              Enhance Your Music Experience
+              {promoProduct?.name || "Enhance Your Music Experience"}
             </h2>
 
-            <p>Get up to 50% off on our premium winter collection. Limited time offer!</p>
+            <p>
+              {promoProduct?.description || "Get up to 50% off on our premium winter collection. Limited time offer!"}
+            </p>
 
             {/* <!-- Countdown timer --> */}
             <div
@@ -104,7 +123,7 @@ const CounDown = () => {
             {/* <!-- Countdown timer ends --> */}
 
             <a
-              href="#"
+              href={promoProduct ? `/product/${promoProduct.slug}` : "#"}
               className="inline-flex font-medium text-custom-sm text-white bg-blue py-3 px-9.5 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
             >
               Check it Out!
@@ -119,13 +138,25 @@ const CounDown = () => {
             width={737}
             height={482}
           />
-          <Image
-            src="/images/countdown/countdown-01.png"
-            alt="product"
-            className="hidden lg:block absolute right-4 xl:right-33 bottom-4 xl:bottom-10 -z-1"
-            width={411}
-            height={376}
-          />
+          {promoProduct?.featured_image ? (
+            <div className="hidden lg:block absolute right-4 xl:right-33 bottom-4 xl:bottom-10 w-[411px] h-[450px] rounded-lg overflow-hidden">
+              <Image
+                src={promoProduct.featured_image.url}
+                alt={promoProduct.name}
+                fill
+                className="object-cover -z-1"
+              />
+            </div>
+          ) : (
+            <div className="hidden lg:block absolute right-4 xl:right-33 bottom-4 xl:bottom-10 w-[411px] h-[450px] rounded-lg overflow-hidden">
+              <Image
+                src="/images/countdown/countdown-01.png"
+                alt="product"
+                fill
+                className="object-cover -z-1"
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>
