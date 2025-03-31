@@ -90,7 +90,10 @@ const Header = () => {
         >
           {/* <!-- header top left --> */}
           <div className="xl:w-auto flex-col sm:flex-row w-full flex sm:justify-between sm:items-center gap-5 sm:gap-10">
-            <Link className="flex-shrink-0" href="/">
+            <Link className="flex-shrink-0" href="/" onClick={() => {
+              setSearchQuery("");
+              setSelectedOption(null);
+            }}>
               <div className="text-3xl font-bold text-blue-light">
                 <span className="text-blue-dark">Sun<span className="text-red-light">*</span> </span> Merce
               </div>
@@ -110,7 +113,7 @@ const Header = () => {
                 }
               }}>
                 <div className="flex items-center">
-                  <CustomSelect options={options} onSelect={handleOptionSelect} />
+                  <CustomSelect options={options} selectedOption={selectedOption} onSelect={handleOptionSelect} />
 
                   <div className="relative max-w-[333px] sm:min-w-[333px] w-full">
                     {/* <!-- divider --> */}

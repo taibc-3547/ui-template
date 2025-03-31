@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-const CustomSelect = ({ options, onSelect }) => {
+const CustomSelect = ({ options, onSelect, selectedOption: controlledSelectedOption }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(
-    options?.[0] || { label: "All" }
+    controlledSelectedOption || options?.[0] || { label: "All" }
   );
 
   const toggleDropdown = () => {
@@ -34,11 +34,15 @@ const CustomSelect = ({ options, onSelect }) => {
   }, []);
 
   useEffect(() => {
-    setSelectedOption(options?.[0] || { label: "All" });
-  }, [options]);
+    if (controlledSelectedOption) {
+      setSelectedOption(controlledSelectedOption);
+    } else {
+      setSelectedOption(options?.[0] || { label: "All" });
+    }
+  }, [options, controlledSelectedOption]);
 
   return (
-    <div className="dropdown-content custom-select relative" style={{ width: "200px" }}>
+    <div className="dropdown-content custom-select relative" style={{ width: "200px" }} onBlur={() => setIsOpen(false)}>
       <div
         className={`select-selected whitespace-nowrap ${
           isOpen ? "select-arrow-active" : ""
