@@ -11,8 +11,12 @@ import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
 import { getCategories, getProducts, getCollectionProducts, getFilteredProducts } from "@/app/lib/fastschema";
 import { Category, Product } from "@/app/lib/fastschema/types";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const ShopWithSidebar = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [productStyle, setProductStyle] = useState("grid");
   const [productSidebar, setProductSidebar] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
@@ -112,16 +116,77 @@ const ShopWithSidebar = () => {
     fetchCategories();
   }, []);
 
-  // Handle sort change
-  const handleSortChange = (value: string) => {
-    if (value.endsWith('-desc')) {
-      setSortKey(value.replace('-desc', ''));
-      setReverse(true);
-    } else {
-      setSortKey(value);
-      setReverse(false);
-    }
-  };
+  // Initialize filters from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    
+    setSelectedCategory(params.get('category') || '');
+    setSelectedGender(params.get('gender') || '');
+    setSelectedSizes(params.getAll('size') || []);
+    setSelectedColors(params.getAll('color') || []);
+    setSortKey(params.get('sort') || '');
+    setReverse(params.get('order') === 'desc');
+    setSearchQuery(params.get('q') || '');
+    setCurrentPage(parseInt(params.get('page') || '1'));
+    
+    // Handle price range
+    const minPrice = params.get('minPrice');
+    const maxPrice = params.get('maxPrice');
+    setPriceRange({
+      min: minPrice ? parseInt(minPrice) : undefined,
+      max: maxPrice ? parseInt(maxPrice) : undefined
+    });
+  }, [searchParams]);
+
+  // Update URL with current filters
+  const updateURLParams = useCallback(() => {
+    const params = new URLSearchParams();
+
+    // Only add params that have values
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (selectedGender) params.set('gender', selectedGender);
+    if (searchQuery) params.set('q', searchQuery);
+    if (sortKey) params.set('sort', sortKey);
+    if (reverse) params.set('order', 'desc');
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    if (priceRange.min) params.set('minPrice', priceRange.min.toString());
+    if (priceRange.max) params.set('maxPrice', priceRange.max.toString());
+    
+    // Handle arrays
+    selectedSizes.forEach(size => params.append('size', size));
+    selectedColors.forEach(color => params.append('color', color));
+
+    // Update URL without triggering a page reload
+    const newURL = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.push(newURL, { scroll: false });
+  }, [
+    selectedCategory,
+    selectedGender,
+    selectedSizes,
+    selectedColors,
+    sortKey,
+    reverse,
+    searchQuery,
+    currentPage,
+    priceRange,
+    router
+  ]);
+
+  // Update URL whenever filters change
+  useEffect(() => {
+    updateURLParams();
+  }, [
+    selectedCategory,
+    selectedGender,
+    selectedSizes,
+    selectedColors,
+    sortKey,
+    reverse,
+    searchQuery,
+    currentPage,
+    priceRange,
+    updateURLParams
+  ]);
 
   // Move fetchProducts inside useCallback to maintain reference stability
   const fetchProducts = useCallback(async () => {
@@ -180,12 +245,25 @@ const ShopWithSidebar = () => {
     priceRange
   ]);
 
-  // Handle category selection
+  // Modify existing handlers to work with URL params
   const handleCategorySelect = (categorySlug: string) => {
     setSelectedCategory(categorySlug);
+    setCurrentPage(1); // Reset page when filter changes
+  };
+
+  const handleSortChange = (value: string) => {
+    if (value.endsWith('-desc')) {
+      setSortKey(value.replace('-desc', ''));
+      setReverse(true);
+    } else {
+      setSortKey(value);
+      setReverse(false);
+    }
+    setCurrentPage(1);
   };
 
   const handleCleanAll = () => {
+    // Clear all filters
     setSearchQuery('');
     setSelectedCategory('');
     setSortKey('');
@@ -194,6 +272,10 @@ const ShopWithSidebar = () => {
     setSelectedSizes([]);
     setSelectedColors([]);
     setPriceRange({});
+    setCurrentPage(1);
+    
+    // Clear URL params
+    router.push(window.location.pathname, { scroll: false });
   };
 
   // Helper function to generate page numbers array
