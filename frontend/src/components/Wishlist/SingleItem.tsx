@@ -58,12 +58,22 @@ const SingleItem = ({ item }) => {
         <div className="flex items-center justify-between gap-5">
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] bg-gray-2 max-w-[80px] w-full h-17.5">
-              <Image src={item.images[0].url} alt="product" width={200} height={200} />
+              {/* <Image src={item.images[0].url} alt="product" width={200} height={200} /> */}
+              <div className="relative w-full h-full rounded-lg overflow-hidden">
+                {
+                  item.merchandise.product.featuredImage.url ? <Image
+                    src={item.merchandise.product.featuredImage.url || null}
+                    alt=""
+                    fill
+                    className="object-cover"
+                  /> : <div className="w-full h-full bg-gray-200"></div>
+                }
+              </div>
             </div>
 
             <div>
               <h3 className="text-dark ease-out duration-200 hover:text-blue">
-                <a href="#"> {item.title} </a>
+                <a href="#"> {item.merchandise.product.title}</a>
               </h3>
             </div>
           </div>
@@ -71,11 +81,11 @@ const SingleItem = ({ item }) => {
       </div>
 
       <div className="min-w-[205px]">
-        <p className="text-dark">${item.discountedPrice}</p>
+        <p className="text-dark">${item.cost.totalAmount.amount}</p>
       </div>
 
       <div className="min-w-[265px]">
-        <div className="flex items-center gap-1.5">
+        {/* <div className="flex items-center gap-1.5">
           <svg
             width="20"
             height="20"
@@ -100,6 +110,24 @@ const SingleItem = ({ item }) => {
           </svg>
 
           <span className="text-red"> Out of Stock </span>
+        </div> */}
+        <div className="flex items-center gap-1.5">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16.6663 5L7.49967 14.1667L3.33301 10"
+              stroke="#22C55E"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <p className="text-green">In Stock</p>
         </div>
       </div>
 

@@ -32,17 +32,45 @@ export const wishlist = createSlice({
   initialState,
   reducers: {
     addItemToWishlist: (state, action: PayloadAction<CartItem>) => {
-      const { id, merchandise, quantity, cost } = action.payload;
-      const existingItem = state.items.find((item) => item.id === id);
+      const { id, merchandise, cost } = action.payload;
+      
+      // Validate required data exists
+      if (!id || !merchandise?.product || !cost?.totalAmount) {
+        console.warn('Invalid wishlist item data:', action.payload);
+        return;
+      }
+
+      // Ensure consistent ID format (convert to string)
+      const itemId = id.toString();
+      
+      // Check for existing item using consistent ID comparison
+      const existingItem = state.items.find((item) => item.id?.toString() === itemId);
 
       if (!existingItem) {
-        state.items.push({
-          id,
-          merchandise,
+        // Create properly structured item
+        const newItem: CartItem = {
+          id: itemId,
+          merchandise: {
+            id: merchandise.id?.toString(),
+            title: merchandise.title,
+            selectedOptions: merchandise.selectedOptions || [],
+            product: {
+              id: merchandise.product.id?.toString(),
+              handle: merchandise.product.handle,
+              title: merchandise.product.title,
+              featuredImage: merchandise.product.featuredImage
+            }
+          },
           quantity: 1, // Wishlist items always have quantity 1
-          cost
-        });
-        // Save to cookies
+          cost: {
+            totalAmount: {
+              amount: cost.totalAmount.amount?.toString(),
+              currencyCode: cost.totalAmount.currencyCode || "USD"
+            }
+          }
+        };
+
+        state.items.push(newItem);
         saveWishlistToCookies(state);
       }
     },

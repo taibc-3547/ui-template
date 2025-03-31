@@ -3,9 +3,18 @@ import React from "react";
 import Breadcrumb from "../Common/Breadcrumb";
 import { useAppSelector } from "@/redux/store";
 import SingleItem from "./SingleItem";
+import { useDispatch } from "react-redux";
+import { clearWishlist } from "@/redux/features/wishlist-slice";
+import { CartItem } from "@/app/lib/fastschema/types";
 
 export const Wishlist = () => {
-  const wishlistItems = useAppSelector((state) => state.wishlistReducer.items);
+  const dispatch = useDispatch();
+  const wishlistItems = useAppSelector((state) => state.wishlistReducer.items) as CartItem[];
+
+  console.log('wishlistItems', wishlistItems);
+  const handleClearWishlist = () => {
+    dispatch(clearWishlist());
+  };
 
   return (
     <>
@@ -14,7 +23,13 @@ export const Wishlist = () => {
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
           <div className="flex flex-wrap items-center justify-between gap-5 mb-7.5">
             <h2 className="font-medium text-dark text-2xl">Your Wishlist</h2>
-            <button className="text-blue">Clear Wishlist Cart</button>
+            <button 
+              onClick={handleClearWishlist}
+              className="text-blue hover:text-blue-dark transition-colors"
+              disabled={wishlistItems.length === 0}
+            >
+              Clear Wishlist
+            </button>
           </div>
 
           <div className="bg-white rounded-[10px] shadow-1">
@@ -40,10 +55,17 @@ export const Wishlist = () => {
                   </div>
                 </div>
 
-                {/* <!-- wish item --> */}
-                {wishlistItems.map((item, key) => (
-                  <SingleItem item={item} key={key} />
-                ))}
+                {wishlistItems.length > 0 ? (
+                  // Display wishlist items
+                  wishlistItems.map((item) => (
+                    <SingleItem key={item.id} item={item} />
+                  ))
+                ) : (
+                  // Display empty state
+                  <div className="flex items-center justify-center py-10 px-10">
+                    <p className="text-dark-4">Your wishlist is empty</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
