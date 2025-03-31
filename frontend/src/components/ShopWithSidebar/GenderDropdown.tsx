@@ -1,14 +1,22 @@
 "use client";
 import React, { useState } from "react";
 
-const GenderItem = ({ category }) => {
-  const [selected, setSelected] = useState(false);
+interface GenderItemProps {
+  category: {
+    name: string;
+    products: number;
+  };
+  selected: boolean;
+  onSelect: (name: string) => void;
+}
+
+const GenderItem = ({ category, selected, onSelect }: GenderItemProps) => {
   return (
     <button
       className={`${
         selected && "text-blue"
-      } group flex items-center justify-between ease-out duration-200 hover:text-blue `}
-      onClick={() => setSelected(!selected)}
+      } group flex items-center justify-between ease-out duration-200 hover:text-blue`}
+      onClick={() => onSelect(category.name)}
     >
       <div className="flex items-center gap-2">
         <div
@@ -33,14 +41,11 @@ const GenderItem = ({ category }) => {
             />
           </svg>
         </div>
-
         <span>{category.name}</span>
       </div>
-
-      <span
-        className={`${
-          selected ? "text-white bg-blue" : "bg-gray-2"
-        } inline-flex rounded-[30px] text-custom-xs px-2 ease-out duration-200 group-hover:text-white group-hover:bg-blue`}
+      <span className={`${
+        selected ? "text-white bg-blue" : "bg-gray-2"
+      } inline-flex rounded-[30px] text-custom-xs px-2 ease-out duration-200 group-hover:text-white group-hover:bg-blue`}
       >
         {category.products}
       </span>
@@ -48,7 +53,13 @@ const GenderItem = ({ category }) => {
   );
 };
 
-const GenderDropdown = ({ genders }) => {
+interface GenderDropdownProps {
+  genders: Array<{ name: string; products: number }>;
+  selected: string;
+  onSelect: (gender: string) => void;
+}
+
+const GenderDropdown = ({ genders, selected, onSelect }: GenderDropdownProps) => {
   const [toggleDropdown, setToggleDropdown] = useState(true);
 
   return (
@@ -92,7 +103,12 @@ const GenderDropdown = ({ genders }) => {
         }`}
       >
         {genders.map((gender, key) => (
-          <GenderItem key={key} category={gender} />
+          <GenderItem 
+            key={key} 
+            category={gender} 
+            selected={selected === gender.name}
+            onSelect={onSelect}
+          />
         ))}
       </div>
     </div>

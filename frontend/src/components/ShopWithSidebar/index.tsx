@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Breadcrumb from "../Common/Breadcrumb";
 import CustomSelect from "./CustomSelect";
 import CategoryDropdown from "./CategoryDropdown";
@@ -9,7 +9,7 @@ import ColorsDropdwon from "./ColorsDropdwon";
 import PriceDropdown from "./PriceDropdown";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
-import { getCategories, getProducts, getCollectionProducts } from "@/app/lib/fastschema";
+import { getCategories, getProducts, getCollectionProducts, getFilteredProducts } from "@/app/lib/fastschema";
 import { Category, Product } from "@/app/lib/fastschema/types";
 
 const ShopWithSidebar = () => {
@@ -32,6 +32,12 @@ const ShopWithSidebar = () => {
 
   // Calculate total pages
   const totalPages = Math.ceil(totalItems / pageSize);
+
+  // Add new state variables for filters
+  const [selectedGender, setSelectedGender] = useState<string>('');
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<{ min?: number; max?: number }>({});
 
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
@@ -79,9 +85,10 @@ const ShopWithSidebar = () => {
     }
 
     return () => {
+      window.removeEventListener("scroll", handleStickyMenu);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  });
+  }, [productSidebar]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -120,31 +127,19 @@ const ShopWithSidebar = () => {
     }
   };
 
-  // Fetch products based on filters
-  const fetchProducts = async () => {
+  // Move fetchProducts inside useCallback to maintain reference stability
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      let response: { items: Product[]; total: number };
-
-      if (selectedCategory) {
-        // Fetch products by category
-        response = await getCollectionProducts({
-          category: selectedCategory,
-          sortKey,
-          reverse,
-          page: currentPage,
-          limit: pageSize
-        });
-      } else {
-        // Fetch all products with search and sort
-        response = await getProducts({
-          query: searchQuery,
-          sortKey,
-          reverse,
-          page: currentPage,
-          limit: pageSize
-        });
-      }
+      
+      const response = await getFilteredProducts({
+        priceRange,
+        sizes: selectedSizes,
+        colors: selectedColors,
+        sort: sortKey,
+        page: currentPage,
+        limit: pageSize
+      });
 
       setProducts(response.items);
       setTotalItems(response.total);
@@ -155,17 +150,36 @@ const ShopWithSidebar = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [priceRange, selectedSizes, selectedColors, sortKey, currentPage, pageSize]);
 
   // Effect to fetch products when filters or pagination changes
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, sortKey, reverse, searchQuery, currentPage]);
+  }, [
+    fetchProducts,
+    selectedCategory,
+    sortKey,
+    reverse,
+    searchQuery,
+    currentPage,
+    selectedGender,
+    selectedSizes,
+    selectedColors
+  ]);
 
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, sortKey, reverse, searchQuery]);
+  }, [
+    selectedCategory,
+    sortKey,
+    reverse,
+    searchQuery,
+    selectedGender,
+    selectedSizes,
+    selectedColors,
+    priceRange
+  ]);
 
   // Handle category selection
   const handleCategorySelect = (categorySlug: string) => {
@@ -177,6 +191,10 @@ const ShopWithSidebar = () => {
     setSelectedCategory('');
     setSortKey('');
     setReverse(false);
+    setSelectedGender('');
+    setSelectedSizes([]);
+    setSelectedColors([]);
+    setPriceRange({});
   };
 
   // Helper function to generate page numbers array
@@ -222,6 +240,31 @@ const ShopWithSidebar = () => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Add handlers for new filters
+  const handleGenderSelect = (gender: string) => {
+    setSelectedGender(gender);
+  };
+
+  const handleSizeSelect = (size: string) => {
+    setSelectedSizes(prev => 
+      prev.includes(size) 
+        ? prev.filter(s => s !== size)
+        : [...prev, size]
+    );
+  };
+
+  const handleColorSelect = (color: string) => {
+    setSelectedColors(prev => 
+      prev.includes(color) 
+        ? prev.filter(c => c !== color)
+        : [...prev, color]
+    );
+  };
+
+  const handlePriceRangeChange = (min?: number, max?: number) => {
+    setPriceRange({ min, max });
   };
 
   return (
@@ -313,16 +356,29 @@ const ShopWithSidebar = () => {
                   )}
 
                   {/* <!-- gender box --> */}
-                  <GenderDropdown genders={genders} />
+                  <GenderDropdown 
+                    genders={genders} 
+                    selected={selectedGender}
+                    onSelect={handleGenderSelect}
+                  />
 
                   {/* // <!-- size box --> */}
-                  <SizeDropdown />
+                  <SizeDropdown 
+                    selected={selectedSizes}
+                    onSelect={handleSizeSelect}
+                  />
 
                   {/* // <!-- color box --> */}
-                  <ColorsDropdwon />
+                  <ColorsDropdwon 
+                    selected={selectedColors}
+                    onSelect={handleColorSelect}
+                  />
 
                   {/* // <!-- price range box --> */}
-                  <PriceDropdown />
+                  <PriceDropdown 
+                    value={priceRange}
+                    onChange={handlePriceRangeChange}
+                  />
                 </div>
               </form>
             </div>
