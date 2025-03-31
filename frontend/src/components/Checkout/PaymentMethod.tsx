@@ -1,14 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 
-const PaymentMethod = () => {
-  const [payment, setPayment] = useState("cash");
-
-  const handlePaymentChange = (method: string) => {
-    if (method === "cash") {
-      setPayment(method);
-    }
+interface PaymentMethodProps {
+  formData: {
+    paymentMethod: string;
   };
+  errors: {
+    paymentMethod?: string;
+  };
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+}
+
+const PaymentMethod: React.FC<PaymentMethodProps> = ({ formData, errors, handleChange, handleBlur }) => {
+  // Ensure cash payment is selected by default
+  useEffect(() => {
+    if (!formData.paymentMethod) {
+      const event = {
+        target: {
+          name: 'paymentMethod',
+          value: 'cash'
+        }
+      } as React.ChangeEvent<HTMLInputElement>;
+      handleChange(event);
+    }
+  }, []);
 
   const DisabledPaymentMethod = ({ id, name, icon, width, height }: { 
     id: string;
@@ -17,20 +33,12 @@ const PaymentMethod = () => {
     width: number;
     height: number;
   }) => (
-    <div className="relative group">
+    <div className="relative group opacity-60">
       <label
         htmlFor={id}
-        className="flex select-none items-center gap-4 opacity-60 cursor-not-allowed"
+        className="flex select-none items-center gap-4 cursor-not-allowed"
       >
         <div className="relative">
-          <input
-            type="checkbox"
-            name={id}
-            id={id}
-            className="sr-only"
-            onChange={() => handlePaymentChange(id)}
-            disabled
-          />
           <div className="flex h-4 w-4 items-center justify-center rounded-full border border-gray-4 bg-gray-100"></div>
         </div>
 
@@ -71,36 +79,26 @@ const PaymentMethod = () => {
             height={12}
           />
 
-          {/* Enhanced Active Cash on Delivery Option */}
+          {/* Active Cash on Delivery Option - Always Selected */}
           <label
             htmlFor="cash"
             className="flex cursor-pointer select-none items-center gap-4"
           >
             <div className="relative">
               <input
-                type="checkbox"
-                name="cash"
+                type="radio"
+                name="paymentMethod"
                 id="cash"
+                value="cash"
+                checked={true}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 className="sr-only"
-                onChange={() => handlePaymentChange("cash")}
-                checked={payment === "cash"}
               />
-              <div
-                className={`flex h-4 w-4 items-center justify-center rounded-full ${
-                  payment === "cash"
-                    ? "border-4 border-blue ring-2 ring-blue/30"
-                    : "border border-gray-4"
-                }`}
-              ></div>
+              <div className="flex h-4 w-4 items-center justify-center rounded-full border-4 border-blue ring-2 ring-blue/30"></div>
             </div>
 
-            <div
-              className={`rounded-md border-[0.5px] py-3.5 px-5 ease-out duration-200 min-w-[240px] ${
-                payment === "cash"
-                  ? "border-blue/20 bg-blue/5 shadow-[0_0_15px_rgba(60,80,224,0.1)] transform scale-[1.02]"
-                  : "border-gray-4 shadow-1"
-              }`}
-            >
+            <div className="rounded-md border-[0.5px] py-3.5 px-5 ease-out duration-200 min-w-[240px] border-blue/20 bg-blue/5 shadow-[0_0_15px_rgba(60,80,224,0.1)] transform scale-[1.02]">
               <div className="flex items-center">
                 <div className="pr-2.5">
                   <Image 
@@ -108,18 +106,16 @@ const PaymentMethod = () => {
                     alt="cash" 
                     width={21} 
                     height={21}
-                    className={payment === "cash" ? "transform scale-110" : ""} 
+                    className="transform scale-110"
                   />
                 </div>
 
                 <div className="border-l border-gray-4 pl-2.5">
-                  <p className={`font-medium ${payment === "cash" ? "text-blue" : ""}`}>
+                  <p className="font-medium text-blue">
                     Cash on delivery
-                    {payment === "cash" && (
-                      <span className="ml-2 text-xs bg-blue/10 text-blue py-1 px-2 rounded-full">
-                        Selected
-                      </span>
-                    )}
+                    <span className="ml-2 text-xs bg-blue/10 text-blue py-1 px-2 rounded-full">
+                      Selected
+                    </span>
                   </p>
                 </div>
               </div>
@@ -134,6 +130,10 @@ const PaymentMethod = () => {
             height={20}
           />
         </div>
+
+        {errors.paymentMethod && (
+          <p className="text-red text-sm mt-3">{errors.paymentMethod}</p>
+        )}
       </div>
     </div>
   );

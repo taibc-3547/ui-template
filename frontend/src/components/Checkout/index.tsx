@@ -46,16 +46,17 @@ const Checkout = () => {
     city: "",
     country: "",
     zipCode: "",
-    paymentMethod: "",
+    paymentMethod: "cash",
   });
 
   const [errors, setErrors] = useState<Partial<CheckoutFormData>>({});
 
   const validateField = (name: string, value: string): string => {
+    if (!value && value !== '0') {  // Fix for select fields with value "0"
+      return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+    }
+
     switch (name) {
-      case 'firstName':
-      case 'lastName':
-        return value.trim() ? '' : `${name === 'firstName' ? 'First' : 'Last'} name is required`;
       case 'email':
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
           ? '' 
@@ -64,18 +65,12 @@ const Checkout = () => {
         return /^\+?[\d\s-]{10,}$/.test(value) 
           ? '' 
           : 'Please enter a valid phone number';
-      case 'address':
-        return value.trim() ? '' : 'Address is required';
-      case 'city':
-        return value.trim() ? '' : 'City is required';
-      case 'country':
-        return value.trim() ? '' : 'Country is required';
       case 'zipCode':
-        return /^[0-9]{5,6}$/.test(value) ? '' : 'Please enter a valid zip code';
-      case 'paymentMethod':
-        return value.trim() ? '' : 'Please select a payment method';
+        return /^\d{4,6}$/.test(value.trim()) 
+          ? '' 
+          : 'Please enter a valid zip code (4-6 digits)';
       default:
-        return '';
+        return value.trim() ? '' : `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
     }
   };
 
@@ -124,8 +119,52 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = async () => {
-    if (!validateForm()) {
-      toast.error("Please fill in all required fields correctly");
+    const requiredFields: (keyof CheckoutFormData)[] = [
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'address',
+      'city',
+      'country',
+      'zipCode',
+      'paymentMethod'
+    ];
+
+    const newErrors: Partial<CheckoutFormData> = {};
+    let isValid = true;
+
+    // Only validate required fields
+    requiredFields.forEach((fieldName) => {
+      const value = formData[fieldName] || '';
+      const error = validateField(fieldName, value);
+      if (error) {
+        newErrors[fieldName] = error;
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (!isValid) {
+      const errorMessages = Object.values(newErrors)
+        .filter(error => error)
+        .join('\n');
+      toast.error(errorMessages, {
+        duration: 5000,
+        style: {
+          maxWidth: '500px',
+          background: '#FEE2E2',
+          border: '1px solid #FCA5A5',
+          color: '#DC2626',
+          padding: '16px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          fontSize: '14px',
+          fontWeight: 500,
+        },
+        icon: '⚠️',
+      });
       return;
     }
 
@@ -159,7 +198,7 @@ const Checkout = () => {
         city: "",
         country: "",
         zipCode: "",
-        paymentMethod: "",
+        paymentMethod: "cash",
       });
       
     } catch (error) {
@@ -182,10 +221,15 @@ const Checkout = () => {
                 {/* <Login /> */}
 
                 {/* <!-- billing details --> */}
-                <Billing />
+                <Billing 
+                  formData={formData}
+                  errors={errors}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                />
 
                 {/* <!-- address box two --> */}
-                <Shipping />
+                {/* <Shipping /> */}
 
                 {/* <!-- others note box --> */}
                 <div className="bg-white shadow-1 rounded-[10px] p-4 sm:p-8.5 mt-7.5">
@@ -265,7 +309,12 @@ const Checkout = () => {
                 <ShippingMethod />
 
                 {/* <!-- payment box --> */}
-                <PaymentMethod />
+                <PaymentMethod 
+                  formData={formData}
+                  errors={errors}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                />
 
                 {/* <!-- checkout button --> */}
                 <button

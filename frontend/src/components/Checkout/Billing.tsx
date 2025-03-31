@@ -1,6 +1,25 @@
 import React from "react";
 
-const Billing = () => {
+interface BillingProps {
+  formData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    country: string;
+    zipCode: string;
+    companyName?: string;
+  };
+  errors: {
+    [key: string]: string;
+  };
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => void;
+}
+
+const Billing: React.FC<BillingProps> = ({ formData, errors, handleChange, handleBlur }) => {
   return (
     <div className="">
       <h2 className="font-medium text-dark text-xl sm:text-2xl mb-5.5">
@@ -18,9 +37,15 @@ const Billing = () => {
               type="text"
               name="firstName"
               id="firstName"
-              placeholder="Type your name"
-              className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+              value={formData.firstName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Type your first name"
+              className={`rounded-md border ${errors.firstName ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
             />
+            {errors.firstName && (
+              <p className="text-red text-sm mt-1">{errors.firstName}</p>
+            )}
           </div>
 
           <div className="w-full">
@@ -32,9 +57,15 @@ const Billing = () => {
               type="text"
               name="lastName"
               id="lastName"
-              placeholder="Type your name"
-              className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+              value={formData.lastName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Type your last name"
+              className={`rounded-md border ${errors.lastName ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
             />
+            {errors.lastName && (
+              <p className="text-red text-sm mt-1">{errors.lastName}</p>
+            )}
           </div>
         </div>
 
@@ -86,53 +117,95 @@ const Billing = () => {
 
         <div className="mb-5">
           <label htmlFor="address" className="block mb-2.5">
-            Street Address
-            <span className="text-red">*</span>
+            Street Address <span className="text-red">*</span>
           </label>
 
           <input
             type="text"
             name="address"
             id="address"
+            value={formData.address}
+            onChange={handleChange}
+            onBlur={handleBlur}
             placeholder="House number and street name"
+            className={`rounded-md border ${errors.address ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
+          />
+          {errors.address && (
+            <p className="text-red text-sm mt-1">{errors.address}</p>
+          )}
+        </div>
+
+        <div className="mt-5">
+          <input
+            type="text"
+            name="addressTwo"
+            id="addressTwo"
+            placeholder="Apartment, suite, unit, etc. (optional)"
             className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
           />
-
-          <div className="mt-5">
-            <input
-              type="text"
-              name="address"
-              id="addressTwo"
-              placeholder="Apartment, suite, unit, etc. (optional)"
-              className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-            />
-          </div>
         </div>
 
         <div className="mb-5">
-          <label htmlFor="town" className="block mb-2.5">
-            Town/ City <span className="text-red">*</span>
+          <label htmlFor="city" className="block mb-2.5">
+            Town/City <span className="text-red">*</span>
           </label>
 
           <input
             type="text"
-            name="town"
-            id="town"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+            name="city"
+            id="city"
+            value={formData.city}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="Enter your city"
+            className={`rounded-md border ${errors.city ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
           />
+          {errors.city && (
+            <p className="text-red text-sm mt-1">{errors.city}</p>
+          )}
         </div>
 
         <div className="mb-5">
           <label htmlFor="country" className="block mb-2.5">
-            Country
+            Country <span className="text-red">*</span>
+          </label>
+
+          <select
+            name="country"
+            id="country"
+            value={formData.country}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`w-full bg-gray-1 rounded-md border ${errors.country ? 'border-red' : 'border-gray-3'} text-dark-4 py-3 pl-5 pr-9 duration-200 appearance-none outline-none focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
+          >
+            <option value="">Select a country</option>
+            <option value="Australia">Australia</option>
+            <option value="United States">United States</option>
+            <option value="United Kingdom">United Kingdom</option>
+          </select>
+          {errors.country && (
+            <p className="text-red text-sm mt-1">{errors.country}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label htmlFor="zipCode" className="block mb-2.5">
+            Zip Code <span className="text-red">*</span>
           </label>
 
           <input
             type="text"
-            name="country"
-            id="country"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+            name="zipCode"
+            id="zipCode"
+            value={formData.zipCode}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="Enter zip code"
+            className={`rounded-md border ${errors.zipCode ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
           />
+          {errors.zipCode && (
+            <p className="text-red text-sm mt-1">{errors.zipCode}</p>
+          )}
         </div>
 
         <div className="mb-5">
@@ -141,11 +214,18 @@ const Billing = () => {
           </label>
 
           <input
-            type="text"
+            type="tel"
             name="phone"
             id="phone"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+            value={formData.phone}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="Enter your phone number"
+            className={`rounded-md border ${errors.phone ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
           />
+          {errors.phone && (
+            <p className="text-red text-sm mt-1">{errors.phone}</p>
+          )}
         </div>
 
         <div className="mb-5.5">
@@ -157,8 +237,15 @@ const Billing = () => {
             type="email"
             name="email"
             id="email"
-            className="rounded-md border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+            value={formData.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="Enter your email address"
+            className={`rounded-md border ${errors.email ? 'border-red' : 'border-gray-3'} bg-gray-1 placeholder:text-dark-5 w-full py-2.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20`}
           />
+          {errors.email && (
+            <p className="text-red text-sm mt-1">{errors.email}</p>
+          )}
         </div>
 
         {/* <div>
