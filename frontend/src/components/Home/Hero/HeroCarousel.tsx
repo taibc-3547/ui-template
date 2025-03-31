@@ -115,7 +115,7 @@ const HeroCarousal = () => {
               </Link>
             </div>
 
-            <div>
+            <div className="h-full py-10">
               <Image
                 src={slide.image.src}
                 alt={slide.image.alt}
