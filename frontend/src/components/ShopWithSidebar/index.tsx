@@ -126,8 +126,8 @@ const ShopWithSidebar = () => {
     setSelectedColors(params.getAll('color') || []);
     setSortKey(params.get('sort') || '');
     setReverse(params.get('order') === 'desc');
-    setSearchQuery(params.get('q') || '');
     setCurrentPage(parseInt(params.get('page') || '1'));
+    setSearchQuery(params.get('q') || '');
     
     // Handle price range
     const minPrice = params.get('minPrice');

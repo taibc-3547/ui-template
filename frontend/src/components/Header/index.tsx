@@ -97,7 +97,18 @@ const Header = () => {
             </Link>
 
             <div className="max-w-[475px] w-full">
-              <form>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (searchQuery.trim() !== "") {
+                  if (currentPath === "/shop-with-sidebar") {
+                    const searchParams = new URLSearchParams(window.location.search);   
+                    searchParams.set('q', searchQuery);
+                    router.push(`/shop-with-sidebar?${searchParams.toString()}`);
+                  } else {
+                    router.push(`/shop-with-sidebar?search=${searchQuery}`);
+                  }
+                }
+              }}>
                 <div className="flex items-center">
                   <CustomSelect options={options} onSelect={handleOptionSelect} />
 
@@ -116,14 +127,10 @@ const Header = () => {
                     />
 
                     <button
+                      type="submit"
                       id="search-btn"
                       aria-label="Search"
                       className="flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 ease-in duration-200 hover:text-blue"
-                      onClick={() => {
-                        if (searchQuery.trim() !== "") {
-                          router.push(`/shop-with-sidebar?search=${searchQuery}`);
-                        }
-                      }}
                     >
                       <svg
                         className="fill-current"
