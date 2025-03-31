@@ -8,7 +8,7 @@ interface SizeDropdownProps {
 
 const SizeDropdown = ({ selected, onSelect }: SizeDropdownProps) => {
   const [toggleDropdown, setToggleDropdown] = useState(true);
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
   return (
     <div className="bg-white shadow-1 rounded-lg">

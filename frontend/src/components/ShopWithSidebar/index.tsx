@@ -57,17 +57,13 @@ const ShopWithSidebar = () => {
 
   const genders = [
     {
-      name: "Men",
+      name: "Male",
       products: 10,
     },
     {
-      name: "Women",
+      name: "Female",
       products: 23,
-    },
-    {
-      name: "Unisex",
-      products: 8,
-    },
+    }
   ];
 
   useEffect(() => {
@@ -139,7 +135,8 @@ const ShopWithSidebar = () => {
         sort: sortKey,
         page: currentPage,
         limit: pageSize,
-        query: searchQuery
+        query: searchQuery,
+        gender: selectedGender
       });
 
       setProducts(response.items);
@@ -151,7 +148,7 @@ const ShopWithSidebar = () => {
     } finally {
       setLoading(false);
     }
-  }, [priceRange, selectedSizes, selectedColors, sortKey, currentPage, pageSize, searchQuery]);
+  }, [priceRange, selectedSizes, selectedColors, sortKey, currentPage, pageSize, searchQuery, selectedGender]);
 
   // Effect to fetch products when filters or pagination changes
   useEffect(() => {

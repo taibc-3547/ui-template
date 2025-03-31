@@ -344,7 +344,8 @@ export async function getFilteredProducts({
   sort = '-id',
   page = 1,
   limit = 18,
-  query
+  query,
+  gender
 }: {
   priceRange?: { min?: number; max?: number };
   sizes?: string[];
@@ -353,10 +354,16 @@ export async function getFilteredProducts({
   page?: number;
   limit?: number;
   query?: string;
+  gender?: string;
 }): Promise<{ items: Product[]; total: number }> {
   const fastschema = await useFastSchema();
   const filter: Record<string, any> = {};
   const conditions = [];
+
+  // Add gender filter
+  if (gender) {
+    conditions.push({ gender: gender.toLowerCase() });
+  }
 
   // Add search query filter
   if (query) {
@@ -403,7 +410,7 @@ export async function getFilteredProducts({
   const offset = (page - 1) * limit;
 
   const products = await fastschema.schema('product').get({
-    select: 'id,name,slug,featured_image,images,price,description,content,promoted,sales_count,size,color',
+    select: 'id,name,slug,featured_image,images,price,description,content,promoted,sales_count,size,color,gender',
     limit,
     offset,
     filter,
