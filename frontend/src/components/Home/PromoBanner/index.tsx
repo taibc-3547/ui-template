@@ -159,7 +159,7 @@ const PromoBanner = () => {
                     slug: banner.link.replace('/products/', ''),
                     price: 0
                   })}
-                  className={`inline-flex mt-${index === 0 ? "9" : "7.5"} ${banner.buttonTheme} text-white text-sm font-medium py-2.5 px-8 rounded-md transition duration-200`}
+                  className={`inline-flex mt-${index === 0 ? "9" : "9"} ${banner.buttonTheme} text-white text-sm font-medium py-2.5 px-8 rounded-md transition duration-200`}
                 >
                   {index === 0 ? "Grab Now" : "Buy Now"}
                 </button>
