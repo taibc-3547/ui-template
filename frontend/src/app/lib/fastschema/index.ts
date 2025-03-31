@@ -1,4 +1,4 @@
-import { FastSchema } from 'fastschema';
+import { FastSchema, UserRegisterData } from 'fastschema';
 export * from 'fastschema';
 import { Cart, Category, Menu, Order, Product } from './types';
 import { OrderInfoFormValues } from '@/components/Checkout/data';
@@ -436,3 +436,31 @@ export async function getFilteredProducts({
     total: products.total
   };
 }
+
+export const login = async (login: string, password: string) => {
+  const fastschema = await useFastSchema();
+  return fastschema.auth().login('local', {
+    login,
+    password
+  });
+};
+
+export const register = async (data: UserRegisterData) => {
+  const fastschema = await useFastSchema();
+  return await fastschema.auth().register(data);
+};
+
+export const activateAccount = async (token: string) => {
+  const fastschema = await useFastSchema();
+  return await fastschema.auth().activate(token);
+};
+
+export const resendActivationLink = async (token: string) => {
+  const fastschema = await useFastSchema();
+  return await fastschema.auth().resendActivationLink(token);
+}
+
+export const me = async () => {
+  const fastschema = await useFastSchema();
+  return fastschema.auth().me();
+};
