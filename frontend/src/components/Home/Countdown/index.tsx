@@ -3,6 +3,10 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { getPromotedProducts } from "@/app/lib/fastschema";
 import type { Product } from "@/app/lib/fastschema/types";
+import { useModalContext } from "@/app/context/QuickViewModalContext";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { updateQuickView } from "@/redux/features/quickView-slice";
 
 const CounDown = () => {
   const [days, setDays] = useState(0);
@@ -10,6 +14,8 @@ const CounDown = () => {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [promoProduct, setPromoProduct] = useState<Product | null>(null);
+  const { openModal } = useModalContext();
+  const dispatch = useDispatch<AppDispatch>();
 
   const deadline = "December, 31, 2024";
 
@@ -42,6 +48,11 @@ const CounDown = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleQuickView = (product) => {
+    dispatch(updateQuickView({ ...product }));
+    openModal();
+  };
 
   return (
     <section className="overflow-hidden py-20">
@@ -122,12 +133,24 @@ const CounDown = () => {
             </div>
             {/* <!-- Countdown timer ends --> */}
 
-            <a
-              href={promoProduct ? `/product/${promoProduct.slug}` : "#"}
+            <button
+              onClick={() => {
+                if (promoProduct) {
+                  handleQuickView({
+                    name: promoProduct.name,
+                    description: promoProduct.description,
+                    images: [{
+                      url: promoProduct.featured_image.url
+                    }],
+                    slug: promoProduct.slug,
+                    price: promoProduct.price
+                  });
+                }
+              }}
               className="inline-flex font-medium text-custom-sm text-white bg-blue py-3 px-9.5 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
             >
               Check it Out!
-            </a>
+            </button>
           </div>
 
           {/* <!-- bg shapes --> */}
